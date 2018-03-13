@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/track_cfg_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/textView"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/details_button_label"
+        android:layout_gravity="right"
+        android:id="@+id/track_cfg_details"
+        />
+</LinearLayout>

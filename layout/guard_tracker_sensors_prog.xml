@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sensors_prog_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sensors_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/textView"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="10dp"
+            android:text="@string/ble_status_label_for"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;BLE status>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/sensors_ble_status"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="10dp"
+            android:text="@string/sensors_program_label_for"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;BLE program>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/sensors_program_ble"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="&lt;GSM program>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/sensors_program_rtc"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="&lt;ACC program>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/sensors_program_acc"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+        <Button android:id="@+id/sensors_ble_refresh_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/sensors_ble_program_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/program_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+    </LinearLayout>
+
+</LinearLayout>

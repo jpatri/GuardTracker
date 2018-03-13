@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView android:id="@+id/lt_position_list_item_textView"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView android:id="@+id/lg_position_list_item_textView"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@id/lt_position_list_item_textView"/>
+
+    <TextView android:id="@+id/alt_position_list_item_textView"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lt_position_list_item_textView"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView android:id="@+id/time_position_list_item_textView"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lt_position_list_item_textView"
+        android:layout_toEndOf="@id/alt_position_list_item_textView"/>
+
+    <TextView android:id="@+id/nsat_position_list_item_textView"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lt_position_list_item_textView"
+        android:layout_toEndOf="@id/time_position_list_item_textView"/>
+
+    <TextView android:id="@+id/hdop_position_list_item_textView"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lt_position_list_item_textView"
+        android:layout_toEndOf="@id/nsat_position_list_item_textView"/>
+
+    <TextView android:id="@+id/fixed_position_list_item_textView"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lt_position_list_item_textView"
+        android:layout_toEndOf="@id/hdop_position_list_item_textView"/>
+
+</RelativeLayout>

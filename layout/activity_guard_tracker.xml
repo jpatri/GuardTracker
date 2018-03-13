@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context="com.patri.guardtracker.GuardTrackerActivity">
+<!--     android:background="@color/color_background" -->
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <!-- Identification -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/identification_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"/>
+            <include layout="@layout/guard_tracker_identification"/>
+            <!-- CurrentStatus -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/current_status_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"/>
+            <include layout="@layout/guard_tracker_last_mon_info" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_pos_ref" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_sensors_prog" />
+            <!-- Configurations -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/configuration_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"/>
+            <include layout="@layout/guard_tracker_mon_cfg" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_track_cfg" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_vigilance_cfg" />
+            <!-- Contacts -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/contacts_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"
+                />
+            <include layout="@layout/guard_tracker_owner" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_secondary_contacts" />
+            <!-- History -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/history_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"
+                />
+            <include layout="@layout/guard_tracker_mon_info" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_track_sessions" />
+            <!-- Internal status -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_background"
+                android:textSize="@dimen/item_group_title"
+                android:inputType="none"
+                android:text="@string/internal_status_title"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingLeft="@dimen/margin_medium"/>
+
+<!--    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_dialog_email" />
+-->
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
+

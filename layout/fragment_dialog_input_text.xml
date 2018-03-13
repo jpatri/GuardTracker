@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_medium"
+    android:orientation="vertical">
+
+<!--    <TextView android:id="@+id/pair_new_dialog_message_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />-->
+    <EditText android:id="@+id/dialog_input_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        />
+    <TextView android:id="@+id/dialog_invalid_text_format"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_invalid_phone_format"
+        android:textSize="12sp"
+        android:textStyle="bold|italic"
+        android:labelFor="@id/dialog_input_text"
+        android:visibility="invisible"
+        android:textColor="@android:color/holo_red_dark" />
+
+
+</LinearLayout>

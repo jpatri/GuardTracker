@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/track_sessions_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/textView"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/track_session_size_entries_view" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="@string/all_label"
+            android:layout_gravity="center"
+            android:id="@+id/track_session_all_button"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="@string/last_label"
+            android:layout_gravity="center"
+            android:id="@+id/track_session_last_button"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="@string/select_label"
+            android:layout_gravity="center"
+            android:id="@+id/track_session_select_button"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

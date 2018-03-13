@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mon_cfg_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/textView"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mon_cfg_next_wake_label"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;dd/mm/yyyy  hh:mm>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/mon_cfg_next_wake_datetime"
+            android:layout_marginStart="31dp"
+            />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/details_button_label"
+        android:layout_gravity="right"
+        android:id="@+id/mon_cfg_details" />
+</LinearLayout>

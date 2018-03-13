@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pos_ref_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <!--android:paddingBottom="@dimen/margin_medium"-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pos_ref_subtitle"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:id="@+id/textView"
+            android:paddingBottom="@dimen/margin_medium"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button android:id="@+id/pos_ref_google_maps_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_button_activity_guard_tracker"
+            style="?android:attr/borderlessButtonStyle"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_label_for"
+            android:paddingRight="10dp"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="&lt;dd/mm/yyyy  hh:mm:ss>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_datetime"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gps_label_for"
+            android:paddingRight="10dp"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;latitude>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_lat"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;longitude>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_lng"
+            android:layout_marginStart="31dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/others_label_for"
+            android:paddingRight="10dp"
+            android:textAppearance="?android:textAppearanceSmall"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;alt>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_alt"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;nº sat>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_sat"
+            android:layout_marginStart="16dp"
+            />
+        <!-- lembrete: hdop = horizontal dilution of precision -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;hdop>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_hdop"
+            android:layout_marginStart="16dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&lt;fixed>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:id="@+id/pos_ref_fixed"
+            android:layout_marginStart="16dp"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+        <Button android:id="@+id/pos_ref_refresh_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/pos_ref_set_new_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_reference_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/pos_ref_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel_button_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/pos_ref_pending_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pending_button_label"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:background="@drawable/round_rectangle"
+            android:textColor="@color/colorBlack"
+            android:visibility="gone"
+            android:clickable="false" />
+<!--
+             style="?android:attr/borderlessButtonStyle"
+-->
+    </LinearLayout>
+
+</LinearLayout>

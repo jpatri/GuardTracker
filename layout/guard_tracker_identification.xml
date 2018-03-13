@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nickname:"
+                android:id="@+id/identification_nickname" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:id="@+id/identification_nickname_value"
+                android:text="&lt;device nickname>"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:ellipsize="end"
+                />
+        </LinearLayout>
+        <ImageButton android:id="@+id/identification_nickname_edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_edit"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"
+            />
+
+        <!--<EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:id="@+id/identification_nickname_value"
+            android:text="&lt;device nickname>"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:inputType="text"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:drawableRight="@drawable/ic_action_edit"
+            android:imeOptions="actionDone"
+            />-->
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BLE:"
+            android:id="@+id/identification_ble" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:id="@+id/identification_ble_value"
+            android:text="&lt;ble mac address>"
+            android:textAppearance="?android:textAppearanceMedium"
+            />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GSM:"
+                android:id="@+id/identification_gsm"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:id="@+id/identification_gsm_value"
+                android:text="&lt;gsm phonenumber>"
+                android:textAppearance="?android:textAppearanceMedium"
+                />
+        </LinearLayout>
+        <ImageButton android:id="@+id/identification_gsm_edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_edit"
+            android:background="@android:color/transparent"
+            android:layout_gravity="center_vertical"
+            />
+    </LinearLayout>
+</LinearLayout>

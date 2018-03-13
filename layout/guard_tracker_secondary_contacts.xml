@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/secondary_contacts_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/secondary_contacts_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/textView"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_contacts"
+        android:id="@+id/empty_contacts" />
+    <LinearLayout
+        android:id="@+id/contacts_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+        <Button android:id="@+id/secondary_contacts_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_button_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/secondary_contacts_refresh_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh_button_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+        <Button android:id="@+id/secondary_contacts_add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_button_label"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            />
+    </LinearLayout>
+
+</LinearLayout>

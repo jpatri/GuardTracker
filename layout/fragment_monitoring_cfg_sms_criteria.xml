@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_medium"
+    android:id="@+id/mon_cfg_sms_criteria"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sms_criteria_list_view"
+        android:choiceMode="singleChoice"
+        android:clickable="true"
+        android:soundEffectsEnabled="true"
+        />
+
+    <!-- android:entries="@array/period_type_array" -->
+    <!--<view
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />-->
+    <com.patri.guardtracker.custom.MyNumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/timePicker"
+        android:visibility="gone"
+        />
+<!--    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/two_numberPicker" />-->
+<!--    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/one_numberPicker" />-->
+<!--    <Chronometer
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chronometer" />-->
+</LinearLayout>

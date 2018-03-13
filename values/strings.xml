@@ -1,0 +1,464 @@
+<resources>
+    <string name="app_name">GuardTracker App</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_guard_tracker_list">GuardTracker list</string>
+    <string name="title_activity_guard_tracker">GuardTracker</string>
+    <string name="nickname_activity_guard_tracker">Device nickname</string>
+    <string name="enter_text_activity_guard_tracker">Enter text</string>
+    <string name="gsm_number_activity_guard_tracker">Phone number</string>
+    <string name="ble_addr_activity_guard_tracker">BLE address</string>
+    <string name="connect_activity_guard_tracker">BLE Connection</string>
+    <string name="no_connection_activity_guard_tracker">No connection</string>
+    <string name="enabled_activity_guard_tracker">Enable</string>
+    <string name="device_enabled_activity_guard_tracker">Device enable</string>
+    <string name="ref_position_activity_guard_tracker">Reference pos</string>
+    <string name="map_button_activity_guard_tracker">See map</string>
+    <string name="mon_info_activity_guard_tracker">Statistics</string>
+    <string name="track_sessions_activity_guard_tracker">Track sessions</string>
+    <string name="configurations_activity_guard_tracker">Configurations</string>
+    <string name="internal_status_cfg_activity_guard_tracker">Status</string>
+    <string name="button_action">>></string>
+    <string name="saved_guard_tracker_id">SavedGuardTrackerId</string>
+    <string name="saved_guard_tracker_name">SavedGuardTrackerName</string>
+    <string name="saved_guard_tracker_pos_ref_id">SavedGuardTrackerPosRefId</string>
+    <string name="saved_guard_tracker_mon_cfg_id">SavedGuardTrackerMonCfgId</string>
+    <string name="saved_guard_tracker_track_session_cfg_id">SavedGuardTrackerTrackSessionCfgId</string>
+    <string name="saved_guard_tracker_vigilance_cfg_id">SavedGuardTrackerVigilanceCfgId</string>
+    <string name="saved_guard_tracker_enable_spinner_position">SavedGuardTrackerEnableSpinnerPosition</string>
+    <string name="saved_guard_tracker_mon_info_spinner_position">SavedGuardTrackerMonInfoSpinnerPosition</string>
+    <string name="saved_guard_tracker_track_session_spinner_position">SavedGuardTrackerTrackSessionSpinnerPosition</string>
+    <string name="saved_guard_tracker_cfg_spinner_position">SavedGuardTrackerCfgSpinnerPosition</string>
+    <string name="saved_mon_cfg_period_spinner_position">SavedMonCfgPeriodSpinnerPosition</string>
+    <string name="saved_mon_cfg_sms_enable_spinner_position">SavedMonCfgSmsEnableSpinnerPosition</string>
+    <string name="saved_tracking_cfg_criteria_spinner_position">SavedTrackingCfgCriteriaSpinnerPosition</string>
+
+    <!-- Maintain the same order in the next arrays for other languages -->
+    <string-array name="enable_disable_array">
+        <item>Enable</item>
+        <item>Disable</item>
+    </string-array>
+    <string-array name="configurations_array">
+        <item>Monitoring</item>
+        <item>Tracking</item>
+        <item>Vigilance</item>
+    </string-array>
+    <string-array name="track_sessions_array">
+        <item>@string/all_label</item>
+        <item>@string/last_label</item>
+        <item>@string/select_label</item>
+    </string-array>
+    <!-- Must has the same order than enum defined in MonitoringInfo and array classes defined in GuardTrackerActivity -->
+    <string-array name="mon_info_array">
+        <item>@string/temperature_label</item>
+        <item>@string/sim_balance_label</item>
+        <item>@string/bat_charge_label</item>
+        <item>@string/position_label</item>
+    </string-array>
+    <string-array name="period_type_array">
+        <item>Minute</item>
+        <item>Hour</item>
+        <item>Day</item>
+    </string-array>
+    <string-array name="tracking_sms_criteria_array">
+        <item>Lazy</item>
+        <item>Normal</item>
+        <item>Stressed</item>
+        <item>Final</item>
+    </string-array>
+    <string-array name="monitoring_sms_criteria_array">
+        <item>Allways</item>
+        <item>Alarm only</item>
+        <item>Never</item>
+        <item>Cyclic</item>
+    </string-array>
+    <string name="title_activity_monitoring_cfg">Monitoring configuration</string>
+    <string name="title_activity_tracking_cfg">Tracking configuration</string>
+    <string name="title_activity_vigilance_cfg">Vigilance configuration</string>
+    <string name="title_activity_temperature_info">Temperature info</string>
+    <string name="title_activity_position_info">Position info</string>
+    <string name="title_activity_balance_info">Balance info</string>
+    <string name="title_activity_battery_charge_info">Battery charge info</string>
+    <string name="title_activity_track_session">Track session</string>
+    <string name="title_activity_track_session_selection">Track sessions list</string>
+    <string name="title_activity_sms_received_earlier">Process SMSs</string>
+    <string name="title_activity_devices_eliminate">Eliminate devices</string>
+    <string name="time_label_activity_monitoring_cfg">Time</string>
+    <string name="time_hint_activity_monitoring_cfg">Enter HH:MM</string>
+    <string name="period_label_activity_monitoring_cfg">Period</string>
+    <string name="period_hint_activity_monitoring_cfg">Enter digit</string>
+    <string name="sms_enable_label_activity_monitoring_cfg">SMS enable</string>
+    <string name="gps_threshold_label_activity_monitoring_cfg">GPS threshold [mt]</string>
+    <string name="gps_threshold_hint_activity_monitoring_cfg">Enter meters</string>
+    <string name="gps_fov_label_activity_monitoring_cfg">GPS fov</string>
+    <string name="gps_fov_hint_activity_monitoring_cfg">Enter satellites in view</string>
+    <string name="gps_timeout_label_activity_monitoring_cfg">GPS timeout [mn]</string>
+    <string name="gps_timeout_hint_activity_monitoring_cfg">Enter timeout to ACQ</string>
+
+    <string name="gps_criteria_label_activity_tracking_cfg">GPS criteria</string>
+    <string name="gps_time_tracking_label_activity_tracking_cfg">Time tracking [mn]</string>
+    <string name="gps_time_pre_label_activity_tracking_cfg">Time pre [mn]</string>
+    <string name="gps_time_post_label_activity_tracking_cfg">Time post [mn]</string>
+    <string name="gps_time_tracking_hint_activity_tracking_cfg">Enter minutes</string>
+    <string name="gps_time_pre_hint_activity_tracking_cfg">Enter minutes</string>
+    <string name="gps_time_post_hint_activity_tracking_cfg">Enter minutes</string>
+
+    <string name="tilt_level_label_activity_vigilance_cfg">Tilt level</string>
+    <string name="tilt_level_hint_activity_vigilance_cfg">Enter tilt level</string>
+    <string name="ble_advertise_label_activity_vigilance_cfg">Ble advertise</string>
+    <string name="ble_advertise_hint_activity_vigilance_cfg">Enter ble advertise</string>
+    <string name="saved_guard_tracker_tracking_cfg_id">SavedGuardTrackerTrackingCfgId</string>
+    <string name="title_activity_monitoring_info">Monitoring information</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="temperature_line_legend_temperature_info">Temperature</string>
+    <string name="sim_balance_line_legend_sim_balance_info">Sim balance</string>
+    <string name="battery_charge_line_legend_battery_charge_info">Battery charge</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+    <!--<string name="title_activity_maps">Map</string>-->
+
+    <!-- Resumed guardtracker content info -->
+    <string name="last_mon_info_text">Last mon. info.:</string>
+    <string name="activated">On</string>
+    <string name="deactivated">Off</string>
+
+    <!-- GuardTracker stufs -->
+    <string name="identification_title">Identification</string>
+    <string name="current_status_title">Current status</string>
+    <string name="configuration_title">Configurations</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="history_title">History</string>
+    <string name="internal_status_title">Internal status</string>
+    <string name="last_mon_info_subtitle">Last monitoring information</string>
+    <string name="pos_ref_subtitle">Reference position</string>
+    <string name="sensors_subtitle">Sensors</string>
+    <string name="owner_subtitle">Owner contact</string>
+    <string name="secondary_contacts_subtitle">Secondary contacts</string>
+    <string name="empty_contacts">No contacts</string>
+    <string name="mon_cfg_subtitle">Monitoring configuration</string>
+    <string name="track_cfg_subtitle">Tracking configuration</string>
+    <string name="vigilance_cfg_subtitle">Vigilance configuration</string>
+    <string name="mon_info_subtitle">Monitoring information</string>
+    <string name="track_sessions_subtitle">Track sessions</string>
+    <string name="mon_cfg_next_wake_label">Next wake: </string>
+    <string name="mon_cfg_next_wake_in_minutes">wake in next %1$d minutes</string>
+    <string name="mon_cfg_next_wake_in_hours_minutes">wake in next %1$d hours and %2$d minutes</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="authenticating">Authenticating</string>
+    <string name="wait_device_ready">Wait device ready</string>
+    <string name="syncing">Syncing</string>
+    <string name="synchronized_">Synchronized</string>
+    <string name="current_status_label">Current status</string>
+    <string name="date_label">Date</string>
+    <string name="temperature_label">Temperature</string>
+    <string name="position_label">Position</string>
+    <string name="sim_balance_label">Sim balance</string>
+    <string name="bat_charge_label">Battery charge</string>
+    <string name="date_label_for">Date:</string>
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="all_label">All</string>
+    <string name="last_label">Last</string>
+    <string name="select_label">Select</string>
+    <string name="sms_recv_date_label_for">SMS received:</string>
+    <string name="gps_label_for">GPS:</string>
+    <string name="refresh_label">Refresh</string>
+    <string name="new_reference_label">New reference</string>
+    <string name="others_label_for">Others:</string>
+    <string name="ble_status_label_for">Ble status:</string>
+    <string name="sensors_program_label_for">Configuration:</string>
+    <string name="program_label">Config</string>
+    <string name="ble_status_disconnected">Disconnected</string>
+    <string name="ble_status_connected">Connected</string>
+    <string name="ble_status_scanning">Scanning</string>
+    <string name="ble_status_in_range">In range</string>
+    <string name="ble_status_connecting">Connecting</string>
+    <string name="ble_service_description">Service to manage a BLE connection. This service must be activated for the App may establish a connection with device.</string>
+    <string name="id_gsm_addr_empty_label">&lt;empty gsm phone number></string>
+    <string name="nickname_empty_label">&lt;empty device nickname></string>
+
+    <!-- Main activity menu -->
+    <string name="action_scan_ble">Search for GuardTracker devices</string>
+    <string name="action_view_as_list">View as list</string>
+    <string name="action_view_as_map">View as map</string>
+    <string name="action_back_office">Back office</string>
+    <string name="action_eliminate_devices">Eliminate devices from database</string>
+
+    <!-- Bluetooth stufs: imported from project sample LeGatt -->
+    <string name="title_activity_device_scan">BLE Device Scan</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <!--<string name="connected">Connected</string> Already defined -->
+    <!--<string name="disconnected">Disconnected</string> Already defined -->
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+
+    <string name="unknown_owner">Unkown BLE device</string>
+
+    <string name="sync_activity">Sync activity</string>
+    <string name="ble_connection_established_success">The BLE connection was established with success</string>
+    <string name="ble_authenticated_success">App authenticated with success</string>
+    <string name="ble_first_synced_success">Successful paired App with device</string>
+    <string name="ble_first_synced_unsuccessful">Unsuccessful paired App with device</string>
+
+
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_process_received_sms">Process received SMS\'s</string>
+    <string name="menu_eliminate_device">Eliminate device data from database</string>
+    <string name="menu_factory_defaults">Reset device to factory defaults</string>
+    <string name="menu_resync_app">Resync App</string>
+
+    <!-- Common -->
+    <string name="details_button_label">Details</string>
+    <string name="go_button_label">Go</string>
+    <string name="done_button_label">Done</string>
+    <string name="import_button_label">Import</string>
+    <string name="not_imported_label">Not imported</string>
+    <string name="export_button_label">Export</string>
+    <string name="send_button_label">Send</string>
+    <string name="cancel_button_label">Cancel</string>
+    <string name="pending_button_label">Pending</string>
+    <string name="ok_button_label">Ok</string>
+    <string name="eliminate_button_label">Eliminate</string>
+    <string name="add_button_label">Add</string>
+    <string name="delete_button_label">Delete</string>
+    <string name="refresh_button_label">Refresh</string>
+    <string name="list_empty_body_message">The list is empty</string>
+    <string name="empty_label">Empty</string>
+    <string name="meters_all_small_label">meters</string>
+    <string name="minutes_all_small_label">minutes</string>
+    <string name="satellites_label_all_small">satellites</string>
+    <string name="celsius_degrees_label">ºC</string>
+    <string name="temp_low_label">Temp. low</string>
+    <string name="temp_high_label">Temp. high</string>
+
+
+    <!-- Monitoring configuration -->
+    <string name="mon_cfg_item_title_hod">Hour of day to monitorize</string>
+    <string name="mon_cfg_item_title_period">Period to monitorize</string>
+    <string name="mon_cfg_item_title_sms_criteria">Criteria to send SMS</string>
+    <string name="mon_cfg_item_title_gps_threshold">Maximum distance to reference position</string>
+    <string name="mon_cfg_item_title_gps_fov">Minimum number of satellites in view</string>
+    <string name="mon_cfg_item_title_gps_timeout">Maximum time to acquire position</string>
+    <string name="mon_cfg_item_title_temp">Temperature boundaries</string>
+    <string name="mon_cfg_item_title_sim">Minimum SIM balance</string>
+    <string name="mon_cfg_item_title_bat">Battery level watermarker</string>
+    <!-- Tracking configuration -->
+    <string name="track_cfg_item_title_sms_criteria">Criteria to send SMS</string>
+    <string name="track_cfg_item_title_gps_threshold">Maximum distance to last acquired position</string>
+    <string name="track_cfg_item_title_gps_fov">Minimum number of satellites in view</string>
+    <string name="track_cfg_item_title_gps_timeout">Maximum time to acquire position</string>
+    <string name="track_cfg_item_title_timeout_tracking">Maximum time in tracking with no movement</string>
+    <string name="track_cfg_item_title_timeout_pre">Maximum time in pre-tracking with no movement</string>
+    <string name="track_cfg_item_title_timeout_post">Maximum time in post-tracking with no movement</string>
+    <!-- Vigilance configuration -->
+    <string name="vig_cfg_item_title_tilt_sensitivity">Accelerometer sensitivity</string>
+    <string name="vig_cfg_item_title_ble_advertise_period">BLE advertisement period</string>
+    <!-- Monitoring information -->
+
+    <!-- Phonenumber activity. Form to input phonenumber of GuardTracker device -->
+    <string name="phone_number_title">Enter phone number</string>
+    <string name="phone_number_message">The device phone number can not be obtained automatically. The phone number must be introduced manually. This phone number is used to identify the source of SMS message.</string>
+
+    <!-- Alert Notifications -->
+    <string name="notification_title">GuardTracker notification</string>
+
+    <!-- Pair with new device sending sms secret -->
+    <!--<string name="pair_dialog_message">Send one SMS message to %1$s (Guard Tracker device) to pair with this App</string>-->
+    <string name="menu_pair_by_sms">Link with new device (by SMS)</string>
+    <string name="dialog_pair_by_sms_title">Enter device phone number</string>
+    <string name="dialog_pair_by_sms_message_body">Will be sent one SMS message to new device to pair with this App</string>
+    <string name="dialog_pair_by_sms_spannable_phone">&lt;phone number></string>
+    <string name="toast_pair_by_sms_sent">Sms sent. App linked with device.</string>
+    <string name="toast_pair_by_sms_not_sent">Sms failed. Please try again.</string>
+
+    <string name="help">Help</string>
+    <string name="string_help_text"> TO CHANGE: The Microphone permission is missing.\n\nTo grant this permission click on Settings, then Permissions and turn the Microphone permission on.\n\nThen click back twice to return to the app</string>
+    <string name="quit">Exit App</string>
+    <string name="app_name_permissions">Permissions</string>
+    <string name="settings">Settings</string>
+
+    <!-- Dialog messages -->
+    <string name="dialog_device_phone_number_title">Enter device phone number</string>
+    <string name="dialog_device_phone_number_message_body">The device phone number can not be obtained automatically. The phone number must be introduced manually. This phone number is used to identify the source of SMS message.</string>
+    <!-- Nickname dialog -->
+    <string name="dialog_nickname_title">Enter nickname</string>
+    <string name="dialog_nickname_message_body">Enter device nickname.</string>
+    <string name="dialog_nickname_success">Successful database update with new device nickname</string>
+    <string name="dialog_nickname_unsuccess">Unsuccessful database update with new device nickname</string>
+    <string name="dialog_invalid_text_format">Invalid text format</string>
+    <!-- Id GSM address dialog -->
+    <string name="dialog_id_gsm_addr_message_body">Change device phone number every time you change the registered SIM card. You still must enter a dummy phone number, if you want to transfer the SIM card to another device, leave this device with no SIM card and, finally, both devices are controlled from this App.</string>
+    <string name="dialog_id_gsm_addr_success">Successful database update with new GuardTraker phone number</string>
+    <!-- Generic phone number input dialog -->
+    <string name="dialog_phone_title">Enter phone number</string>
+    <string name="dialog_input_phone_hint">XX XXX XX XX</string>
+    <string name="dialog_toast_ok">Operation conclude with success.</string>
+    <string name="dialog_invalid_phone_format">Invalid phone number format</string>
+    <!-- Wake sensors dialog -->
+    <string name="dialog_wake_sensors_title">Config wakeup sensors</string>
+    <string name="dialog_wake_sensors_accelerometer">Accelerometer</string>
+    <string name="dialog_wake_sensors_rtc">Real time clock</string>
+    <string name="dialog_wake_sensors_ble">Bluetooth</string>
+    <string name="dialog_wake_sensors_message_body">Config individual wakeup sensors. On, the sensor may wakeup device; Off, the sensor never wakeup device.</string>
+    <string name="refresh_wake_sensors_message_success">Successful database update with new sensors config value</string>
+    <string name="dialog_wake_sensors_message_success">Successful device update with new sensors config value</string>
+    <string name="dialog_wake_sensors_message_unsuccessful_write">Unsuccessful device and database update with new sensors config value</string>
+    <string name="dialog_wake_sensors_message_unsuccessful_read">Unsuccessful database update with new sensors config value (inconsistent with device after a write)</string>
+    <!-- Eliminate GuardTrackers dialog -->
+    <string name="dialog_eliminate_devices_title">Eliminate devices</string>
+    <string name="dialog_eliminate_devices_message_body">The selected devices will be eliminated from database. Do you want to continue?</string>
+    <string name="dialog_eliminate_devices_message_success">Successful database update with eliminated devices</string>
+    <string name="dialog_eliminate_devices_message_unsuccessful">Unsuccessful database update with eliminated devices</string>
+    <!-- Eliminate GuardTracker dialog -->
+    <string name="dialog_eliminate_device_title">Eliminate this device</string>
+    <string name="dialog_eliminate_device_message_body">This device will be eliminated from database. Do you want to continue?</string>
+    <string name="dialog_eliminate_device_message_success">Successful database update with eliminated device</string>
+    <string name="dialog_eliminate_device_message_unsuccessful">Unsuccessful database update with eliminated device</string>
+    <!-- Refresh secondary contacts -->
+    <string name="refresh_secondary_contacts_success">Successful database update with secondary contacts</string>
+    <string name="refresh_secondary_contacts_unsuccessful">Unsuccessful database update with secondary contacts</string>
+    <!-- Add secondary contact dialog -->
+    <string name="dialog_add_secondary_contact_title">Add contact</string>
+    <string name="dialog_add_secondary_contact_message_body">Enter phone number to be notified by device</string>
+    <string name="dialog_add_secondary_contact_success">Successful device and database update with new contact</string>
+    <string name="dialog_add_secondary_contact_unsuccessful_write">Unsuccessful device and database update with new contact</string>
+    <string name="dialog_add_secondary_contact_unsuccessful_read">Unsuccessful database update with new contact (inconsistent with device after a write)</string>
+    <!-- Delete secondary contact dialog -->
+    <string name="dialog_delete_secondary_contact_title">Delete contact</string>
+    <string name="dialog_delete_secondary_contact_message_body">Enter phone number to be deleted from device</string>
+    <string name="dialog_delete_secondary_contact_success">Successful device and database update with deleted contact</string>
+    <string name="dialog_delete_secondary_contact_unsuccessful_write">Unsuccessful device and database update with deleted contact</string>
+    <string name="dialog_delete_secondary_contact_unsuccessful_read">Unsuccessful database update with deleted contact (inconsistent with device after a write)</string>
+    <!-- Refresh owner -->
+    <string name="refresh_owner_success">Successful database update with owner phone number</string>
+    <string name="refresh_owner_unsuccessful">Unsuccessful database update with owner phone number</string>
+    <!-- Change Owner dialog -->
+    <string name="change_owner_button_label">Change owner</string>
+    <string name="dialog_change_owner_phone_message_body">Enter mobile phone number to be paired with device.\nThis number will be used by device to send SMS alert messages.</string>
+    <string name="dialog_change_owner_title">Enter mobile phone number</string>
+    <string name="dialog_change_owner_success">Successful device update with owner phone number</string>
+    <string name="dialog_change_owner_unsuccessful_write">Unsuccessful device and database update with owner phone number</string>
+    <string name="dialog_change_owner_unsuccessful_read">Unsuccessful database update with owner phone number (inconsistent with device after a write)</string>
+    <!-- Reset to factory defaults -->
+    <string name="dialog_factory_defaults_title">Reset device to factory defaults</string>
+    <string name="dialog_factory_defaults_message_body">The device will be reseated to factory defaults and will be unpaired with this App. The data related with device will be eliminated from database. Do you want to continue?</string>
+    <string name="dialog_factory_defaults_success">Successful device reset to factory defaults and database update</string>
+    <string name="dialog_factory_defaults_unsuccessful_write">Unsuccessful device reset to factory defaults and database update</string>
+    <string name="dialog_factory_defaults_unsuccessful_read">Unsuccessful database update (inconsistent with device after a write)</string>
+    <!-- Resync App with device -->
+    <string name="dialog_resync_app_title">Resynchronize App with device</string>
+    <string name="dialog_resync_app_message_body">The local database will be updated with device configurations. Do you want to continue?</string>
+    <string name="dialog_resync_app_success">Successful update database with device configuration data</string>
+    <string name="dialog_resync_app_unsuccessful">Unsuccessful update database with device configuration data</string>
+    <!-- Resync Monitoring configuration App with device -->
+    <string name="dialog_resync_monitoring_cfg_title">Resynchronize monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_body">The local database will be updated with device monitoring configurations. Do you want to continue?</string>
+    <string name="dialog_resync_monitoring_cfg_success_database">Successful database update with monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_success_device">Successful device update with monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_unsuccessful_write">Unsuccessful device and database update with monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_unsuccessful_read">Unsuccessful database update with monitoring configuration (inconsistent with device after a write)</string>
+    <!-- Resync Tracking configuration App with device -->
+    <string name="dialog_resync_tracking_cfg_title">Resynchronize tracking configuration</string>
+    <string name="dialog_resync_tracking_cfg_body">The local database will be updated with device tracking configurations. Do you want to continue?</string>
+    <string name="dialog_resync_tracking_cfg_success">Successful device and database update with tracking configuration</string>
+    <string name="dialog_resync_tracking_cfg_unsuccessful_write">Unsuccessful device and database update with tracking configuration</string>
+    <string name="dialog_resync_tracking_cfg_unsuccessful_read">Unsuccessful database update with tracking configuration (inconsistent with device after a write)</string>
+    <!-- Resync Vigilance configuration App with device -->
+    <string name="dialog_resync_vigilance_cfg_title">Resynchronize vigilance configuration</string>
+    <string name="dialog_resync_vigilance_cfg_body">The local database will be updated with device vigilance configurations. Do you want to continue?</string>
+    <string name="dialog_resync_vigilance_cfg_success">Successful device and database update with vigilance configuration</string>
+    <string name="dialog_resync_vigilance_cfg_unsuccessful_write">Unsuccessful device and database update with vigilance configuration</string>
+    <string name="dialog_resync_vigilance_cfg_unsuccessful_read">Unsuccessful database update with vigilance configuration (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg time of day -->
+    <string name="dialog_mon_cfg_time_of_day_title">Define new wakeup hour of day</string>
+    <string name="dialog_mon_cfg_time_of_day_message_body">Define hour of day to monitorize device. This value is used only if \"Period to monitorize\" field is defined in days domain.</string>
+    <string name="dialog_mon_cfg_time_of_day_success">Successful device and database update with new time to wakeup</string>
+    <string name="dialog_mon_cfg_time_of_day_unsuccessful_write">Unsuccessful device and database update with new time to wakeup</string>
+    <string name="dialog_mon_cfg_time_of_day_unsuccessful_read">Unsuccessful database update with new time to wakeup (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg wakeup period -->
+    <string name="dialog_mon_cfg_wakeup_period_title">Define new period</string>
+    <string name="dialog_mon_cfg_wakeup_period_message_body">Define period to monitorize device. With \"minutes\" or \"hours\" options selected, time start counting after device turn off (bluetooth disconnect). With \"days\" option selected, device is wakedup in the time defined by the field \"Hour of day to monitorize\".</string>
+    <string name="dialog_mon_cfg_wakeup_period_success_write">Successful device update with new wakeup period</string>
+    <string name="dialog_mon_cfg_wakeup_period_unsuccessful_write">Unsuccessful device and database update with new wakeup period</string>
+    <string name="dialog_mon_cfg_wakeup_period_unsuccessful_read">Unsuccessful database update with new wakeup period (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg sms criteria -->
+    <string name="dialog_mon_cfg_sms_criteria_title">Define new SMS criteria</string>
+    <string name="dialog_mon_cfg_sms_criteria_message_body">Define criteria to send SMS message after monitoring process. With \"Alarm Only\" option, an SMS message is sent only when a sensor value is outside it\'s bounds. The \"Cyclic\" option is referenced to \"Period to monitorize\" field.</string>
+    <string name="dialog_mon_cfg_sms_criteria_success_write">Successful device update with new SMS criteria</string>
+    <string name="dialog_mon_cfg_sms_criteria_success_read">Successful database update with new SMS criteria</string>
+    <string name="dialog_mon_cfg_sms_criteria_unsuccessful_write">Unsuccessful device and database update with new SMS criteria</string>
+    <string name="dialog_mon_cfg_sms_criteria_unsuccessful_read">Unsuccessful database update with new SMS criteria (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg gps threshold -->
+    <string name="dialog_mon_cfg_gps_threshold_title">Define new GPS threshold</string>
+    <string name="dialog_mon_cfg_gps_threshold_message_body">Define distance from reference position from which the device is considered to be in a different position. The defined distance will be an approximated value.</string>
+    <string name="dialog_mon_cfg_gps_threshold_success_write">Successful device update with new Gps threshold</string>
+    <string name="dialog_mon_cfg_gps_threshold_success_read">Successful database update with new Gps threshold</string>
+    <string name="dialog_mon_cfg_gps_threshold_unsuccessful_write">Unsuccessful device and database update with new Gps threshold</string>
+    <string name="dialog_mon_cfg_gps_threshold_unsuccessful_read">Unsuccessful database update with new Gps threshold (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg gps fov -->
+    <string name="dialog_mon_cfg_gps_fov_title">Define new GPS field of view</string>
+    <string name="dialog_mon_cfg_gps_fov_message_body">Define minimum number of satellites in view to validate a GPS position. A greater value gets an accurate position but takes longer to be valid.</string>
+    <string name="dialog_mon_cfg_gps_fov_success_write">Successful device update with new Gps field of view</string>
+    <string name="dialog_mon_cfg_gps_fov_success_read">Successful database update with new Gps field of view</string>
+    <string name="dialog_mon_cfg_gps_fov_unsuccessful_write">Unsuccessful device and database update with new Gps field of view</string>
+    <string name="dialog_mon_cfg_gps_fov_unsuccessful_read">Unsuccessful database update with new Gps field of view (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg gps timeout -->
+    <string name="dialog_mon_cfg_gps_timeout_title">Define new GPS timeout</string>
+    <string name="dialog_mon_cfg_gps_timeout_message_body">Define maximum time to wait for valid GPS position. This value is expressed in minutes units.</string>
+    <string name="dialog_mon_cfg_gps_timeout_success_write">Successful device update with new Gps timeout</string>
+    <string name="dialog_mon_cfg_gps_timeout_success_read">Successful database update with new Gps timeout</string>
+    <string name="dialog_mon_cfg_gps_timeout_unsuccessful_write">Unsuccessful device and database update with new Gps timeout</string>
+    <string name="dialog_mon_cfg_gps_timeout_unsuccessful_read">Unsuccessful database update with new Gps timeout (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg temperature bounds -->
+    <string name="dialog_mon_cfg_temp_bounds_title">Define new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_message_body">Define low and high limits of valid temperature values.</string>
+    <string name="dialog_mon_cfg_temp_bounds_success_write">Successful device update with new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_success_read">Successful database update with new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_unsuccessful_write">Unsuccessful device and database update with new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_unsuccessful_read">Unsuccessful database update with new temperature boundaries (inconsistent with device after a write)</string>
+    <!-- Monitoring cfg sim balance waterline -->
+    <string name="dialog_mon_cfg_sim_balance_title">Define new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_message_body">Define lower limit of SIM balance value to generate an alert.</string>
+    <string name="dialog_mon_cfg_sim_balance_success_write">Successful device update with new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_success_read">Successful database update with new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_unsuccessful_write">Unsuccessful device and database update with new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_unsuccessful_read">Unsuccessful database update with new SIM balance (inconsistent with device after a write)</string>
+    <!-- Pos ref fragment area -->
+    <string name="refresh_pos_ref_success">Successful database update with new reference position</string>
+    <string name="toast_pos_ref_success">Successful device update with new reference position</string>
+    <string name="toast_pos_ref_pending">This command will be pending until a new position is acquired</string>
+    <string name="toast_pos_ref_unsuccessful_write">Unsuccessful device and database update with new reference position</string>
+    <string name="toast_pos_ref_unsuccessful_read">Unsuccessful database update with new position position (inconsistent with device after a write)</string>
+    <string name="toast_pos_ref_cancel_success">Successful stop device update with new reference position</string>
+    <string name="toast_pos_ref_cancel_unsuccessful">The device was not updating new reference position</string>
+
+    <!-- Backoffice -->
+    <string name="title_activity_back_office_main">Back office</string>
+    <string name="tables_item_label">Tables</string>
+    <string name="query_item_label">Query</string>
+    <string-array name="back_office_items_array">
+        <item>@string/tables_item_label</item>
+        <item>@string/query_item_label</item>
+    </string-array>
+    <string name="title_activity_back_office_guard_tracker_table">Guard tracker table</string>
+    <string name="title_activity_back_office_monitoring_cfg_table">Monitoring configuration table</string>
+    <string name="title_activity_back_office_tracking_cfg_table">Tracking configuration table</string>
+    <string name="title_activity_back_office_vigilance_cfg_table">Vigilance configuration table</string>
+    <string name="title_activity_back_office_monitoring_info_table">Monitoring info table</string>
+    <string name="title_activity_back_office_track_sessions_table">Track sessions table</string>
+    <string name="title_activity_back_office_positions_table">Positions table</string>
+
+</resources>

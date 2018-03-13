@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_scan_ble"
+        android:title="@string/action_scan_ble"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_view_as_list"
+        android:title="@string/action_view_as_list"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_view_as_map"
+        android:title="@string/action_view_as_map"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_pair_new_device"
+        android:title="@string/menu_pair_by_sms"
+        android:icon="@drawable/ic_pair_new_link"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_eliminate_devices"
+        android:title="@string/action_eliminate_devices"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_back_office"
+        android:title="@string/action_back_office"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_ble_test"
+        android:title="BLE test - Scan devices"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_sms_received"
+        android:title="Process received sms's"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/test_sms_notification"
+        android:title="Test SMS notification"
+        app:showAsAction="never"/>
+</menu>

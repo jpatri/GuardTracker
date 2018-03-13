@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_guard_tracker_table"
+        android:title="Guard tracker"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_monitoring_cfg_table"
+        android:title="Monitoring configuration"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_tracking_cfg_table"
+        android:title="Tracking cofiguration"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_vigilance_cfg_table"
+        android:title="Vigilance cofiguration"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_monitoring_info_table"
+        android:title="Monitoring info"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_track_sessions_table"
+        android:title="Track sessions"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_position_table"
+        android:title="Positions"
+        app:showAsAction="withText"/>
+
+</menu>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<!--    <item android:id="@+id/ble_status_icon"
+        android:checkable="false"
+        android:icon="@drawable/ic_action_bluetooth"
+        app:showAsAction="always"/>-->
+    <item android:id="@+id/menu_refresh"
+        android:checkable="false"
+        app:showAsAction="always"/>
+    <item android:id="@+id/menu_scan"
+        android:title="@string/menu_scan"
+        android:icon="@drawable/ic_action_bluetooth_disabled"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/menu_stop"
+        android:title="@string/menu_stop"
+        android:icon="@drawable/ic_action_bluetooth_searching"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/menu_connect"
+        android:title="@string/menu_connect"
+        android:icon="@drawable/ic_action_bluetooth"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/menu_disconnect"
+        android:title="@string/menu_disconnect"
+        android:icon="@drawable/ic_action_bluetooth_connected"
+        app:showAsAction="always|withText"/>
+<!--        android:icon="@drawable/ic_action_bluetooth"
+        android:orderInCategory="1"
+        android:orderInCategory="100"
+        android:orderInCategory="101"
+-->
+    <item android:id="@+id/action_sms_received"
+        android:title="@string/menu_process_received_sms"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_eliminate_device"
+        android:title="@string/menu_eliminate_device"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_resynnc_app"
+        android:title="@string/menu_resync_app"
+        app:showAsAction="withText"/>
+    <item android:id="@+id/action_factory_defaults"
+        android:title="@string/menu_factory_defaults"
+        app:showAsAction="withText"/>
+
+</menu>

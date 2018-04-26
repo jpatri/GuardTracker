@@ -18,8 +18,23 @@ public class VigilanceConfiguration {
         this.mBleAdvertisePeriod = bleAdvertisePeriod;
     }
 
+    /**
+     * Compares two VigilanceConfigurations. Two VigilanceConfigurations are considered equals
+     * if they have the same configuration values for the same device.
+     * This may happen in backup domain.
+     * @param vc
+     * @return
+     */
+    public boolean equals(final VigilanceConfiguration vc) {
+        return  vc == this || (
+                        vc.getTiltLevel() == this.getTiltLevel() &&
+                        vc.getBleAdvertisePeriod() == this.getBleAdvertisePeriod()
+        );
+    }
+
+    public void set_id(int id)                  { _id = id; }
     public int get_id()                         { return _id; }
-    public int getmTiltLevel()                  { return mTiltLevel; }
+    public int getTiltLevel()                  { return mTiltLevel; }
     public int getBleAdvertisePeriod()          { return mBleAdvertisePeriod; }
     public void setTiltLevel(int mTiltLevel)   { this.mTiltLevel = mTiltLevel; }
     public void setBleAdvertisePeriod(int bleAdvertisePeriod) {
@@ -221,7 +236,7 @@ public class VigilanceConfiguration {
 //        String[] whereClauseArgs = { String.valueOf(mBackup._id) };
 //
 //        // Execute query
-//        int deletedItems = db.delete(GuardTrackerContract.VigilanceCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
+//        int deletedItems = db.deleteDeep(GuardTrackerContract.VigilanceCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
 //
 //        db.close();
 //        dbHelper.close();

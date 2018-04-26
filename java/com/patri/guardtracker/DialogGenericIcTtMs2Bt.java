@@ -3,6 +3,7 @@ package com.patri.guardtracker;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -71,7 +72,6 @@ public class DialogGenericIcTtMs2Bt extends AppCompatDialogFragment {
                         mListener.onDialogNegativeClick(DialogGenericIcTtMs2Bt.this);
                     }
                 });
-
         mAlertDialog = builder.create();
 //        mAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
 //            @Override
@@ -101,6 +101,9 @@ public class DialogGenericIcTtMs2Bt extends AppCompatDialogFragment {
 //                });
 //            }
 //        });
+
+        //mAlertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0xC0000000));
+
         return mAlertDialog;
     }
 }

@@ -35,10 +35,10 @@ public class MonitoringCfgGpsTimeoutDialogFragment extends DialogGenericIcTtMs2B
 
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_monitoring_cfg_gps_timeout, null);
+        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_cfg_time_picker, null);
         mAlertDialog.setView(mViewContainer);
 
-        mGpsTimeoutTimePicker = (TimePicker) mViewContainer.findViewById(R.id.timePicker);
+        mGpsTimeoutTimePicker = (TimePicker) mViewContainer.findViewById(R.id.numberPicker);
 
         Bundle bundle = getArguments();
         int currentGpsTimeout = bundle.getInt(MonitoringCfgActivity.MON_CFG_CURRENT_GPS_TIMEOUT_IN_MINUTES_ARG);

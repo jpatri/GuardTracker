@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,13 +16,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.patri.guardtracker.model.GuardTracker;
 import com.patri.guardtracker.model.GuardTrackerContract;
 
+import java.security.Guard;
 import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.function.Predicate;
 
 /**
  * Created by patri on 08/06/2016.
@@ -63,21 +70,36 @@ public class GuardTrackerListViewFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_guard_tracker_list_view, container, false);
 
-        mListView = (ListView)view.findViewById(R.id.guard_tracker_list_view);
+        mListView = view.findViewById(R.id.guard_tracker_list_view);
+
+        mCursor = GuardTracker.readCursor(this.getContext(), null, null);
 
         // Coloquei aqui e removi do onCreate.
         mGuardTrackerList = GuardTracker.read(getContext());
 
-        mCursor = GuardTracker.readCursor(this.getContext(), null, null);
+        // Remove backup entries
+        StringBuilder sb = new StringBuilder("_id NOT IN ( ");
+        ListIterator<GuardTracker> it = mGuardTrackerList.listIterator();
+        boolean empty = true;
+        while (it.hasNext())  {
+            GuardTracker gt = it.next();
+            if (gt.getSync() == false && gt.getNext() != null) {
+                sb.append(gt.getNextId());
+                empty = false;
+                break;
+            }
+        }
+        while (it.hasNext())  {
+            GuardTracker gt = it.next();
+            if (gt.getSync() == false && gt.getNext() != null) {
+                sb.append(',');
+                sb.append(gt.getNextId());
+                empty = false;
+            }
+        }
+        sb.append(")");
 
-//        if (mCursor.getCount() == 0) {
-//            String [] noElemsStr =
-//                      {"List empty: no devices paired with this App."};
-//            ArrayAdapter<String> itens =
-//                      new ArrayAdapter<String>(this.getContext(), R.layout.guardtracker_list_item, noElemsStr);
-//            listView.setAdapter(itens);
-//
-        if (mCursor.getCount() == 0) {
+        if (mGuardTrackerList.size() == 0) {
 
                 Context context = getContext();
                 CharSequence text = "Go to Scan and Pair";
@@ -89,20 +111,15 @@ public class GuardTrackerListViewFragment extends Fragment {
             View v = view.findViewById(android.R.id.empty);
             v.setVisibility(View.GONE);
 
-//            container.removeView(view.findViewById(android.R.id.empty));
-
+            Cursor cursor = GuardTracker.readCursor(getContext(), empty ? null : sb.toString(), null);
             String[] fromColumns = {
                     GuardTrackerContract.GuardTrackerTable.COLUMN_NAME_NAME,
                     GuardTrackerContract.GuardTrackerTable.COLUMN_NAME_GSM_ID
             };
-/*            int[] toViews = {R.id.device_name, R.id.device_address};
-            SimpleCursorAdapter cursorAdapter =
-                    new SimpleCursorAdapter(this.getContext(), R.layout.list_item_device_id, mCursor, fromColumns, toViews, 0);
-*/
-            // ELIMINAR O CÓDIGO ANTERIOR DEPOIS DE TESTAR O ECRÃ com o TwoLine
             int[] toViews = {android.R.id.text1, android.R.id.text2};
             SimpleCursorAdapter cursorAdapter =
-                    new SimpleCursorAdapter(this.getContext(), R.layout.list_item_two_line, mCursor, fromColumns, toViews, 0);
+                    new SimpleCursorAdapter(this.getContext(), R.layout.list_item_two_line, cursor, fromColumns, toViews, 0);
+
 
             mListView.setAdapter(cursorAdapter);
             mListView.setOnItemClickListener(new ListView.OnItemClickListener() {

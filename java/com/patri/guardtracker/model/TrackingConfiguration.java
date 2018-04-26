@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
-import com.patri.guardtracker.synchronization.GuardTrackerSyncCfgProcessor;
-
 /**
  * Created by patri on 21/04/2016.
  */
@@ -45,8 +43,28 @@ public class TrackingConfiguration {
         this.mTimeoutTracking = timeTracking;
     }
 
+    /**
+     * Compares two TrackingConfigurations. Two TrackingConfigurations are considered equals
+     * if they have the same configuration values for the same device.
+     * This may happen in backup domain.
+     * @param tc
+     * @return
+     */
+    public boolean equals(final TrackingConfiguration tc) {
+        return  tc == this || (
+                        tc.getSmsCriteria().equals(this.getSmsCriteria()) &&
+                        tc.getGpsThreshold() == this.getGpsThreshold() &&
+                        tc.getGpsFov() == this.getGpsFov() &&
+                        tc.getGpsTimeout() == this.getGpsTimeout() &&
+                        tc.getTimeoutTracking() == this.getTimeoutTracking() &&
+                        tc.getTimeoutPre() == this.getTimeoutPre() &&
+                        tc.getTimeoutPost() == this.getTimeoutPost()
+        );
+    }
+
     //public TrackingConfiguration(int _id) { this._id = _id; }
 
+    public void set_id(int id)          { _id = id; }
     public int get_id() {
         return _id;
     }
@@ -337,7 +355,7 @@ public class TrackingConfiguration {
 //        String[] whereClauseArgs = { String.valueOf(mBackup._id) };
 //
 //        // Execute query
-//        int deletedItems = db.delete(GuardTrackerContract.TrackCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
+//        int deletedItems = db.deleteDeep(GuardTrackerContract.TrackCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
 //
 //        db.close();
 //        dbHelper.close();

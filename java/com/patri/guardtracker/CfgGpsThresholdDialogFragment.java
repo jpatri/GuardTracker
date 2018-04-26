@@ -5,14 +5,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import java.util.Arrays;
 
 /**
  * Created by patri on 20/11/2016.
  */
-public class MonitoringCfgGpsThresholdDialogFragment extends DialogGenericIcTtMs2Bt {
-    public final static String TAG = MonitoringCfgGpsThresholdDialogFragment.class.getSimpleName();
+public class CfgGpsThresholdDialogFragment extends DialogGenericIcTtMs2Bt {
+    public final static String TAG = CfgGpsThresholdDialogFragment.class.getSimpleName();
+    public final static String CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG = "com.patri.guardtracker.CfgGpsThresholdDialogFragment.CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG";
     private final static String[] mValues = {
             "010", "020", "030", "040", "050", "060", "070", "080", "090", "100", "150", "200",
             "300", "400", "500", "600", "700", "800", "900", "1000"
@@ -50,13 +52,14 @@ public class MonitoringCfgGpsThresholdDialogFragment extends DialogGenericIcTtMs
 
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_cfg_gps_threshold, null);
+        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_cfg_number_picker, null);
         mAlertDialog.setView(mViewContainer);
 
-        mGpsThresholdNumberPicker = (NumberPicker) mViewContainer.findViewById(R.id.numberPicker);
+        mGpsThresholdNumberPicker = mViewContainer.findViewById(R.id.numberPicker);
+        TextView textView = mViewContainer.findViewById(R.id.number_picker_units);
 
         Bundle bundle = getArguments();
-        int currentGpsThreshold = bundle.getInt(MonitoringCfgActivity.MON_CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG);
+        int currentGpsThreshold = bundle.getInt(CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG);
         mGpsThresholdNumberPicker.setMinValue(0/*mIntValues[0]*//*MonitoringConfiguration.GPS_THRESHOLD_METERS_MIN*/);
         mGpsThresholdNumberPicker.setMaxValue(mIntValues.length - 1/*MonitoringConfiguration.GPS_THRESHOLD_METERS_MAX*/);
         mGpsThresholdNumberPicker.setSoundEffectsEnabled(true);
@@ -65,6 +68,7 @@ public class MonitoringCfgGpsThresholdDialogFragment extends DialogGenericIcTtMs
 
         int idx = getIndexOfValue(currentGpsThreshold);
         mGpsThresholdNumberPicker.setValue(idx);
+        textView.setText(R.string.meters_all_small_label);
 
         return mAlertDialog;
 

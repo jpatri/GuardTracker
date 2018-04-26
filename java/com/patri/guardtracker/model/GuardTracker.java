@@ -63,6 +63,12 @@ public class GuardTracker {
         mVigilanceCfg = vigCfg;
         mSync = sync;
         mNext = next;
+        // Initiate ids
+        mPosRefId = mPosRef != null ? mPosRef.get_id() : 0;
+        mLastMonInfoId = mLastMonInfo != null ? mLastMonInfo.get_id() : 0;
+        mMonCfgId = mMonCfg != null ? mMonCfg.get_id() : 0;
+        mTrackCfgId = mTrackCfg != null ? mTrackCfg.get_id() : 0;
+        mVigilanceCfgId = mVigilanceCfg != null ? mVigilanceCfg.get_id() : 0;
         // All other field are zero.
     }
 //    public GuardTracker (String name, String ble, String gsm, String owner, int wakeMask, Position pos,
@@ -196,7 +202,7 @@ public class GuardTracker {
     public void addSecondaryContact(String contact)                     { this.mContactsSecondaryList.add(contact); }
     public void removeSecondaryContact(String contact)                  { this.mContactsSecondaryList.remove(contact); }
     public void setNextId(int nextId)                                   { this.mNextId = nextId; }
-    public void setNext(GuardTracker next)                              { this.mNext = next; }
+    public void setNext(GuardTracker next)                              { this.mNext = next; this.mNextId = next!= null ? next.get_id() : 0; mSync = mNext == null; }
 
     // Database operations (CRUD)
     // Auxiliary method to cleanup database resources
@@ -204,6 +210,25 @@ public class GuardTracker {
         if (cursor != null) cursor.close();
         if (db != null) db.close();
         db = null;
+    }
+
+    /**
+     * Compares two GuardTrackers. Two GuardTracker are considered equals
+     * if they have the same configuration values for the same device.
+     * This may happen in GuardTracker backup domain.
+     * @param gt
+     * @return
+     */
+    public boolean equals(final GuardTracker gt) {
+        return  gt == this || (
+                    gt.getGsmId().equals(this.getGsmId()) &&
+                    gt.getBleId().equals(this.getBleId()) &&
+                    gt.getPosRefId()    == this.getPosRefId() &&
+                    gt.getWakeSensors() == this.getWakeSensors() &&
+                    gt.getMonCfgId()    == this.getMonCfgId() &&
+                    gt.getTrackCfgId()  == this.getTrackCfgId() &&
+                    gt.getVigCfgId()    == this.getVigCfgId()
+                );
     }
 
     /**
@@ -563,9 +588,9 @@ public class GuardTracker {
      * @param id the GuardTracker to be deleted from database
      * @return true if GuardTracker with id was successfully deleted, false otherwise.
      */
-    public static boolean delete(Context context, int id) {
+    public static boolean deleteDeep(Context context, int id) {
         GuardTracker guardTracker = GuardTracker.read(context, id);
-        return guardTracker.delete(context);
+        return guardTracker.deleteDeep(context);
     }
 
     /**
@@ -576,12 +601,35 @@ public class GuardTracker {
      * @param ids the array of id's to be deleted.
      * @return the number of GuardTrackers deleted from database.
      */
-    public static int delete(Context context, int [] ids) {
+    public static int deleteDeep(Context context, int [] ids) {
         int deletedItems = 0;
         for (int id : ids) {
-            deletedItems += GuardTracker.delete(context, id) ? 1 : 0;
+            deletedItems += GuardTracker.deleteDeep(context, id) ? 1 : 0;
         }
         return deletedItems;
+    }
+
+    /**
+     * Delete this instance from database. It is NOT a deep delete. Only remove GuardTracker table entry.
+     * @param contex
+     * @return
+     */
+    public boolean delete(Context context) {
+        // Read GuardTracker database helper
+        GuardTrackerDbHelper dbHelper = new GuardTrackerDbHelper(context);
+        // Initialize database for write
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Define columns WHERE clause.
+        String whereClause = GuardTrackerContract.GuardTrackerTable._ID + " LIKE ?";
+        String[] whereClauseArgs = { String.valueOf(_id) };
+
+        // Execute query
+        int deletedItems = db.delete(GuardTrackerContract.GuardTrackerTable.TABLE_NAME, whereClause, whereClauseArgs);
+
+        db.close();
+        dbHelper.close();
+        return deletedItems == 1;
     }
 
     /**
@@ -590,7 +638,7 @@ public class GuardTracker {
      * @param contex
      * @return
      */
-    public boolean delete(Context context) {
+    public boolean deleteDeep(Context context) {
         if (mMonCfgId != 0)
             mMonCfg.delete(context);
         if (mTrackCfgId != 0)
@@ -600,7 +648,7 @@ public class GuardTracker {
         if (mPosRefId != 0)
             mPosRef.delete(context);
         if (mNextId != 0)
-            mNext.delete(context);
+            mNext.deleteDeep(context);
         mMonCfgId = mTrackCfgId = mVigilanceCfgId = mPosRefId = mNextId = 0;
         mMonCfg = null; mTrackCfg = null; mVigilanceCfg = null; mPosRef = null; mNext = null;
 
@@ -669,7 +717,7 @@ public class GuardTracker {
 //        String[] whereClauseArgs = { String.valueOf(mNext._id) };
 //
 //        // Execute query
-//        int deletedItems = db.delete(GuardTrackerContract.GuardTrackerBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
+//        int deletedItems = db.deleteDeep(GuardTrackerContract.GuardTrackerBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
 //
 //        db.close();
 //        dbHelper.close();

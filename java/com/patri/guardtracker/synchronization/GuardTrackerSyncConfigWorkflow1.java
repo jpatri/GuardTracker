@@ -31,12 +31,12 @@ public class GuardTrackerSyncConfigWorkflow1 implements BleMessageListener {
             WAKE_SENSORS_BIT_FIELD | GSM_PHONE_NUMBER_BIT_FIELD | REF_POSITION_BIT_FIELD |
             SECONDARY_CONTACT_BIT_FIELD | OWNER_BIT_FIELD);
 
-    private GuardTrackerSyncConfigListener mListener;   // listener to be notified during workflow process of messages
+    private SyncConfigFromDevListener mListener;   // listener to be notified during workflow process of messages
     private GuardTrackerBleConnControl mBleCtrl;        // controller to communicate with remote device
     private int mLastCfgCmd;                            // identifies the last command sent to remote device
     private long mBitmask;                              // bit field with configurations to be synchronized
     private long mWorkflowBitmask;                      // bit field used to detect end of workflow
-
+    private SyncConfigFinishListener mFinishListener;
     /**
      * Answer processor interface definition.
      * Em vez de toda esta proliferação de objectos, podia usar, neste caso, um switch case.
@@ -89,7 +89,7 @@ public class GuardTrackerSyncConfigWorkflow1 implements BleMessageListener {
         if (cfgCmd == NO_MORE_COMMANDS)
             // No more commands
             // Signal listener
-            mListener.onFinishSyncConfig();
+            mFinishListener.onFinishSyncConfig();
         byte [] nextCmd = getCommand(cfgCmd);
         mBleCtrl.writeBytes(nextCmd);
     }
@@ -245,11 +245,12 @@ public class GuardTrackerSyncConfigWorkflow1 implements BleMessageListener {
      * @param listener listener to receive notifications during workflow synchronization
      * @param bitmask bitmask with configurations to be synchronized
      */
-    public GuardTrackerSyncConfigWorkflow1(GuardTrackerBleConnControl bleCtrl, GuardTrackerSyncConfigListener listener, long bitmask) {
+    public GuardTrackerSyncConfigWorkflow1(GuardTrackerBleConnControl bleCtrl, SyncConfigFromDevListener listener, long bitmask, SyncConfigFinishListener finishSyncConfigListener) {
         mListener = listener;
         mBleCtrl = bleCtrl;
         mBleCtrl.addMessageListener(this);
         mBitmask = bitmask;
+        mFinishListener = finishSyncConfigListener;
     }
 
     @Override

@@ -59,8 +59,29 @@ public class MonitoringConfiguration {
         this.mSimBalanceThreshold = simBalanceThreshold;
     }
 
+    /**
+     * Compares two MonitoringConfigurations. Two MonitoringConfigurations are considered equals
+     * if they have the same configuration values for the same device.
+     * This may happen in backup domain.
+     * @param mc
+     * @return
+     */
+    public boolean equals(final MonitoringConfiguration mc) {
+        return  mc == this || (
+                mc.getTimeMod() == this.getTimeMod() &&
+                        mc.getPeriodMin() == this.getPeriodMin() &&
+                        mc.getSmsCriteria().equals(this.getSmsCriteria()) &&
+                        mc.getGpsThresholdMeters() == this.getGpsThresholdMeters() &&
+                        mc.getGpsFov() == this.getGpsFov() &&
+                        mc.getGpsTimeout() == this.getGpsTimeout() &&
+                        mc.getTempHigh() == this.getTempHigh() &&
+                        mc.getTempLow() == this.getTempLow() &&
+                        mc.getSimBalanceThreshold() == this.getSimBalanceThreshold()
+        );
+    }
 
-//    public MonitoringConfiguration(int _id) {
+
+    //    public MonitoringConfiguration(int _id) {
 //        this(_id,0,0,false,0,0,0);
 //    }
     public void set_id(int id)          { _id = id; }
@@ -367,7 +388,7 @@ public class MonitoringConfiguration {
 //        String[] whereClauseArgs = { String.valueOf(mBackup._id) };
 //
 //        // Execute query
-//        int deletedItems = db.delete(GuardTrackerContract.MonCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
+//        int deletedItems = db.deleteDeep(GuardTrackerContract.MonCfgBackupTable.TABLE_NAME, whereClause, whereClauseArgs);
 //
 //        db.close();
 //        dbHelper.close();

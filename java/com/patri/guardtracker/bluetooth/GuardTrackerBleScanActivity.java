@@ -69,10 +69,10 @@ public class GuardTrackerBleScanActivity extends AppCompatActivity implements Di
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
                 if (device == null) return;
-                final Intent intent = new Intent(GuardTrackerBleScanActivity.this, GuardTrackerBleControlActivity.class);
-                intent.putExtra(GuardTrackerBleControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-                intent.putExtra(GuardTrackerBleControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-                intent.putExtra(GuardTrackerBleControlActivity.EXTRAS_DEVICE_OWNER_PHONE, mSelfPhoneNumber);
+                final Intent intent = new Intent(GuardTrackerBleScanActivity.this, GuardTrackerBleControlActivityFromDev.class);
+                intent.putExtra(GuardTrackerBleControlActivityFromDev.EXTRAS_DEVICE_NAME, device.getName());
+                intent.putExtra(GuardTrackerBleControlActivityFromDev.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+                intent.putExtra(GuardTrackerBleControlActivityFromDev.EXTRAS_DEVICE_OWNER_PHONE, mSelfPhoneNumber);
                 if (mScanning) {
                     stopBleScan();
                 }

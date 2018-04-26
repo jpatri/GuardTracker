@@ -146,10 +146,10 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
         mainLayout.addView(submitQuery);
 
         final TextView help = new TextView(AndroidDatabaseManager.this);
-        help.setText("Click on the row below to update values or delete the tuple");
+        help.setText("Click on the row below to update values or deleteDeep the tuple");
         help.setPadding(0, 5, 0, 5);
 
-        // the spinner which gives user a option to add new row , drop or delete table
+        // the spinner which gives user a option to add new row , drop or deleteDeep table
         final Spinner spinnertable = new Spinner(AndroidDatabaseManager.this);
         mainLayout.addView(spinnertable);
         mainLayout.addView(help);
@@ -395,7 +395,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
                         tv.setText("" + counts);
 
 
-                        //the spinnertable has the 3 items to drop , delete , add row to the table selected by the user
+                        //the spinnertable has the 3 items to drop , deleteDeep , add row to the table selected by the user
                         //here we handle the 3 operations.
                         spinnertable.setOnItemSelectedListener((new AdapterView.OnItemSelectedListener() {
                             @Override
@@ -457,14 +457,14 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 
                                                 new AlertDialog.Builder(AndroidDatabaseManager.this)
                                                         .setTitle("Are you sure?")
-                                                        .setMessage("Clicking on yes will delete all the contents of " + indexInfo.table_name + " table from database")
+                                                        .setMessage("Clicking on yes will deleteDeep all the contents of " + indexInfo.table_name + " table from database")
                                                         .setPositiveButton("yes",
                                                                 new DialogInterface.OnClickListener() {
 
-                                                                    // when user confirms by clicking on yes we drop the table by executing delete table query
+                                                                    // when user confirms by clicking on yes we drop the table by executing deleteDeep table query
                                                                     public void onClick(DialogInterface dialog, int which) {
                                                                         String Query7 = "Delete  from " + indexInfo.table_name;
-                                                                        Log.d("delete table query", Query7);
+                                                                        Log.d("deleteDeep table query", Query7);
                                                                         ArrayList<Cursor> aldeletet = dbm.getData(Query7);
                                                                         Cursor tempc = aldeletet.get(1);
                                                                         tempc.moveToLast();
@@ -726,10 +726,10 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 
     }
 
-    //displays alert dialog from which use can update or delete a row
+    //displays alert dialog from which use can update or deleteDeep a row
     public void updateDeletePopup(int row) {
         Cursor c2 = indexInfo.maincursor;
-        // a spinner which gives options to update or delete the row which user has selected
+        // a spinner which gives options to update or deleteDeep the row which user has selected
         ArrayList<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("Click Here to Change this row");
         spinnerArray.add("Update this row");
@@ -770,7 +770,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 
         paramcrudtext.setMargins(0, 20, 0, 0);
 
-        //spinner which displays update , delete options
+        //spinner which displays update , deleteDeep options
         final Spinner crud_dropdown = new Spinner(getApplicationContext());
 
         ArrayAdapter<String> crudadapter = new ArrayAdapter<String>(AndroidDatabaseManager.this,
@@ -919,8 +919,8 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
                                                     tvmessage.setText("Error:" + tempc.getString(0));
                                                 }
                                             }
-                                            //it he spinner value is delete this row get the values from
-                                            //edit text fields generate a delete query and execute it
+                                            //it he spinner value is deleteDeep this row get the values from
+                                            //edit text fields generate a deleteDeep query and execute it
 
                                             if (spinner_value.equalsIgnoreCase("Delete this row")) {
 
@@ -1090,7 +1090,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
             tableRow.setVisibility(View.VISIBLE);
             currentrow = currentrow + 1;
             //we create listener for each table row when clicked a alert dialog will be displayed
-            //from where user can update or delete the row
+            //from where user can update or deleteDeep the row
             tableRow.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
 

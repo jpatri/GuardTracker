@@ -11,19 +11,21 @@ import android.widget.TimePicker;
 /**
  * Created by patri on 20/11/2016.
  */
-public class MonitoringCfgTimeToWakeDialogFragment extends DialogGenericIcTtMs2Bt {
-    public final static String TAG = MonitoringCfgTimeToWakeDialogFragment.class.getSimpleName();
+public class CfgTimePickerDialogFragment extends DialogGenericIcTtMs2Bt {
+    public final static String TAG = CfgTimePickerDialogFragment.class.getSimpleName();
+    public final static String CFG_CURRENT_TIME_IN_MINUTES_ARG = "com.patri.guardtracker.CfgTimePickerDialogFragment.CFG_CURRENT_TIME_IN_MINUTES_ARG";
 
     protected ViewGroup mViewContainer;
-    private TimePicker mTimeToWakeTimePicker;
+    private TimePicker mTimePicker;
 
-    public int getNewTimeToWakeMinutes() {
-        int currentMinutes = 0;
+    public int getNewTime() {
+        int currentTime = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            currentMinutes = mTimeToWakeTimePicker.getHour() * 60;
-            currentMinutes += mTimeToWakeTimePicker.getMinute();
+            currentTime = mTimePicker.getHour() * 60;
+            currentTime += mTimePicker.getMinute();
+
         }
-        return currentMinutes;
+        return currentTime;
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -37,13 +39,13 @@ public class MonitoringCfgTimeToWakeDialogFragment extends DialogGenericIcTtMs2B
         mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_cfg_time_picker, null);
         mAlertDialog.setView(mViewContainer);
 
-        mTimeToWakeTimePicker = (TimePicker) mViewContainer.findViewById(R.id.numberPicker);
+        mTimePicker = mViewContainer.findViewById(R.id.numberPicker);
 
         Bundle bundle = getArguments();
-        int currentTimeToWakeTimeout = bundle.getInt(MonitoringCfgActivity.MON_CFG_CURRENT_TIME_TO_WAKE_IN_MINUTES_ARG);
-        mTimeToWakeTimePicker.setHour(currentTimeToWakeTimeout/60);
-        mTimeToWakeTimePicker.setMinute(currentTimeToWakeTimeout%60);
-        mTimeToWakeTimePicker.setIs24HourView(true);
+        int currentTime = bundle.getInt(CfgTimePickerDialogFragment.CFG_CURRENT_TIME_IN_MINUTES_ARG);
+        mTimePicker.setHour(currentTime/60);
+        mTimePicker.setMinute(currentTime%60);
+        mTimePicker.setIs24HourView(true);
 
         return mAlertDialog;
 

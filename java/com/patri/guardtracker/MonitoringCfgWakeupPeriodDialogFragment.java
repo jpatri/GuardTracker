@@ -48,7 +48,7 @@ public class MonitoringCfgWakeupPeriodDialogFragment extends DialogGenericIcTtMs
         mAlertDialog.setView(mViewContainer);
 
         mDomainSpinner = (Spinner) mViewContainer.findViewById(R.id.domain_choice_spinner);
-        mPeriodNumberPicker = (NumberPicker) mViewContainer.findViewById(R.id.timePicker);
+        mPeriodNumberPicker = (NumberPicker) mViewContainer.findViewById(R.id.numberPicker);
 
         Bundle bundle = getArguments();
         int currentWakeupPeriod = bundle.getInt(MonitoringCfgActivity.MON_CFG_CURRENT_WAKEUP_PERIOD_IN_MINUTES_ARG);

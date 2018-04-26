@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,8 +27,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,25 +57,41 @@ import com.patri.guardtracker.model.TrackingConfiguration;
 import com.patri.guardtracker.model.VigilanceConfiguration;
 import com.patri.guardtracker.permissions.PermissionsActivity;
 import com.patri.guardtracker.sms.SmsReceivedEarlierActivity;
-import com.patri.guardtracker.synchronization.GuardTrackerSyncConfigListener;
-import com.patri.guardtracker.synchronization.GuardTrackerSyncConfigWorkflow;
+import com.patri.guardtracker.synchronization.SyncConfigCmdProcessedListener;
+import com.patri.guardtracker.synchronization.SyncConfigFinishListener;
+import com.patri.guardtracker.synchronization.SyncConfigFromDevListener;
+import com.patri.guardtracker.synchronization.SyncConfigWorkflow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 public class GuardTrackerActivity extends AppCompatActivity implements BleConnectionStateChangeListener, DialogListener {
     public final static String TRACK_SESSION_ITEM_SELECTED = "com.patri.guardtracker.TRACK_SESSION_ITEM_SELECTION";
     public final static String CONFIG_ID = "com.patri.guardtracker.CONFIG_ID";
+    public final static String BACKUP_CREATE = "com.patri.guardtracker.BACKUP_CREATE";
     public final static String MON_INFO_ITEM_SELECTED = "com.patri.guardtracker.MON_INFO_ITEM_SELECTED";
     public final static String GUARD_TRACKER_ID = "com.patri.guardtracker.GUARD_TRACKER_ID";
     public final static String GUARD_TRACKER_NAME = "com.patri.guardtracker.GUARD_TRACKER_NAME";
+    public static final String RESULT_MON_CFG = "com.patri.guardtracker.RESULT_MON_CGF";
+    public static final String RESULT_TRACK_CFG = "com.patri.guardtracker.RESULT_TRACK_CGF";
+    public static final String RESULT_VIG_CFG = "com.patri.guardtracker.RESULT_VIG_CGF";
     private final static String TAG = GuardTrackerActivity.class.getSimpleName();
+
+    /* Attribute for permissions checeker */
+    static final String[] PERMISSIONS = new String[]{Manifest.permission.READ_SMS};
+    //private PermissionsChecker mChecker;
+    private static final int REQUEST_ENABLE_READ_SMS = 0;
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final int REQUEST_MON_CFG = 2;
+    private static final int REQUEST_TRACK_CFG = 3;
+    private static final int REQUEST_VIG_CFG = 4;
 
     private int mGuardTrackerId;
     private GuardTracker mGuardTracker;
-    private MonitoringConfiguration mMonCfg;
-    private GuardTrackerSyncConfigWorkflow mSyncConfigWorkflow;
+//    private MonitoringConfiguration mMonCfg;
+    private SyncConfigWorkflow mSyncConfigWorkflow;
     private GuardTracker mTempGuardTracker; // Used in resync App command
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -98,13 +120,18 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     }
 
     /**
-     * This enumerate is used to establish the Tag to be passed to dialog. The same dialog type is several situations.
+     * This enumerate is used to establish the Tag to be passed to dialog. The same dialog type is called in several situations.
      */
     enum DialogFragmentTags {
         SelfDeviceEliminate, DevicesEliminate, WakeSensorsConfig, SecondaryContactAdd,
         SecondaryContactDelete, FactoryDefaultsReset, AppResync, DevicePhoneNumber, ChangeOwner,
-        ChangeDevicePhoneNumber, ChangeDeviceNickname;
-        private String[] valuesStr = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        ChangeDevicePhoneNumber, ChangeDeviceNickname, WakeSensorsRestore, WakeSensorsSync, WakeSensorsRefresh,
+        MonCfgRestore, MonCfgSync, MonCfgRefresh,
+        TrackCfgRestore, TrackCfgSync, TrackCfgRefresh,
+        VigCfgRestore, VigCfgSync, VigCfgRefresh
+        ;
+        private String[] valuesStr = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13",
+            "14", "15", "16", "17", "18", "19", "20", "21", "22"};
 
         public String toString() {
             String dialogStr = valuesStr[this.ordinal()];
@@ -151,10 +178,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     private TextView mPosRefSatView;
     private TextView mPosRefHdopView;
     private TextView mPosRefFixedView;
-    private TextView mSensorsBleStatusView;
-    private TextView mSensorsProgBleView;
-    private TextView mSensorsProgRtcView;
-    private TextView mSensorsProgAccView;
+    private TextView mBleStatusValueView;
+    private EditText mBleStatusCommandsView;
+    private Button   mBleStatusCommandsButton;
 
     private TextView mContactsOwnerView;
     private ViewGroup mContactsSecondaryViewGroup;
@@ -171,13 +197,26 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     private Button mPosRefNewRefButton;
     private Button mPosRefCancelNewRefButton;
     private Button mPosRefPendingButton;
-    private Button mWakeSensorsCfgButton;
-    private Button mWakeSensorsRefreshButton;
+
+    private TextView mSensorsConfigBleView;
+    private TextView mSensorsConfigRtcView;
+    private TextView mSensorsConfigAccView;
+    private TextView mSensorsSyncedStateView;
+    private Spinner mSensorsConfigSpinner;
+    private Spinner mSensorsSyncSpinner;
 
     private TextView mMonCfgDatetimeView;
-    private Button mMonCfgDetailsButton;
-    private Button mTrackCfgDetailsButton;
-    private Button mVigilanceCfgDetailsButton;
+    private TextView mMonCfgSyncedStateView;
+    private Spinner mMonCfgConfigSpinner;
+    private Spinner mMonCfgSyncSpinner;
+    private TextView mTrackCfgSyncedStateView;
+    private Spinner mTrackCfgConfigSpinner;
+    private Spinner mTrackCfgSyncSpinner;
+    private TextView mVigCfgSyncedStateView;
+    private Spinner mVigCfgConfigSpinner;
+    private Spinner mVigCfgSyncSpinner;
+    //private Button mTrackCfgDetailsButton;
+    //private Button mVigilanceCfgDetailsButton;
     private TextView mMonInfoSizeEntriesView;
     private Button mMonInfoTempButton;
     private Button mMonInfoPosButton;
@@ -206,12 +245,6 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //            }
 //        }
 //    }
-
-    /* Attribute fro permissions checeker */
-    static final String[] PERMISSIONS = new String[]{Manifest.permission.READ_SMS};
-    //private PermissionsChecker mChecker;
-    private static final int REQUEST_ENABLE_READ_SMS = 0;
-    private static final int REQUEST_ENABLE_BT = 1;
 
     // Device scan callback.
     private ScanCallback mScanCallback = new ScanCallback() {
@@ -263,8 +296,11 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     @Override
     public void onAuthenticated() {
         Log.i(TAG, "onAuthenticated");
-        mWakeSensorsCfgButton.setVisibility(View.VISIBLE);
-        mWakeSensorsRefreshButton.setVisibility(View.VISIBLE);
+        updateBleStateAndInvalidateMenu(BleStateEnum.Connected);
+        updateWakeSensorsView();
+        updateMonCfgView();
+        updateTrackCfgView();
+        updateVigCfgView();
         refPosButtonVisibilityUpdate(false);
         mContactsOwnerRefreshButton.setVisibility(View.VISIBLE);
         mContactsOwnerRstButton.setVisibility(View.VISIBLE);
@@ -272,7 +308,6 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mContactsSecondaryRefreshButton.setVisibility(View.VISIBLE);
         if (mContactsSecondaryList.size() > 0)
             mContactsSecondaryDelButton.setVisibility(View.VISIBLE);
-        updateBleStateAndInvalidateMenu(BleStateEnum.Connected);
     }
 
     @Override
@@ -298,8 +333,11 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     @Override
     public void onDisconnected() {
         Log.i(TAG, "onDisconnected");
-        mWakeSensorsCfgButton.setVisibility(View.GONE);
-        mWakeSensorsRefreshButton.setVisibility(View.GONE);
+        updateBleStateAndInvalidateMenu(BleStateEnum.Connect);
+        updateWakeSensorsView();
+        updateMonCfgView();
+        updateTrackCfgView();
+        updateVigCfgView();
         mPosRefRefreshButton.setVisibility(View.GONE);
         mPosRefNewRefButton.setVisibility(View.GONE);
         mPosRefCancelNewRefButton.setVisibility(View.GONE);
@@ -309,7 +347,6 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mContactsSecondaryAddButton.setVisibility(View.GONE);
         mContactsSecondaryDelButton.setVisibility(View.GONE);
         mContactsSecondaryRefreshButton.setVisibility(View.GONE);
-        updateBleStateAndInvalidateMenu(BleStateEnum.Connect);
     }
 
     @Override
@@ -333,26 +370,12 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     }
 
     private boolean isBleConnectionValid() {
-        if (mBleState != BleStateEnum.Connected) {
-            Toast.makeText(getBaseContext(),
-                    "Operation in progress needs ble to be connected",
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+        return (mBleState == BleStateEnum.Connected);
     }
 
     private void updateBleStateAndInvalidateMenu(BleStateEnum newState) {
         mBleState = newState;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mSensorsBleStatusView.setText(mBleState.toString());
-                mSensorsBleStatusView.setBackgroundColor(mBleState.toBackgroundColor());
-                mSensorsBleStatusView.setTextColor(mBleState.toForegroundColor());
-
-            }
-        });
+        updateBleStatusView();
         invalidateOptionsMenu();
     }
 
@@ -423,16 +446,191 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 DialogFragmentTags.ChangeDevicePhoneNumber.toString());
     }
 
-    private void startWakeSensorsConfigDialog() {
+    private void startWakeSensorsEditDialog() {
         int bitmask = mGuardTracker.getWakeSensors();
         WakeSensorsConfigDialogFragment dialogFragment = new WakeSensorsConfigDialogFragment();
         FragmentManager manager = getSupportFragmentManager();
         Bundle bundle = new Bundle();
         bundle.putInt(WakeSensorsConfigDialogFragment.WAKE_SENSORS_BITMASK_ID_KEY, bitmask);
-        bundle.putInt(WakeSensorsConfigDialogFragment.WAKE_SENSORS_MESSAGE_BODY_ID_KEY, R.string.dialog_wake_sensors_message_body);
-        bundle.putInt(WakeSensorsConfigDialogFragment.WAKE_SENSORS_TITLE_ID_KEY, R.string.dialog_wake_sensors_title);
         dialogFragment.setArguments(bundle);
         dialogFragment.show(manager, DialogFragmentTags.WakeSensorsConfig.toString());
+    }
+
+    private void startWakeSensorsRestoreDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_wake_sensors_restore_title,
+                R.string.dialog_wake_sensors_restore_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.WakeSensorsRestore.toString());
+    }
+
+    private void startWakeSensorsViewSyncedDialog() {
+        int bitmask = mGuardTracker.getNext().getWakeSensors();
+        WakeSensorsBackupViewFragment dialogFragment = new WakeSensorsBackupViewFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(WakeSensorsBackupViewFragment.WAKE_SENSORS_BITMASK_ID_KEY, bitmask);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, /*DialogFragmentTags.WakeSensorsConfig.toString()*/null);
+    }
+
+    private void startWakeSensorsSyncDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_wake_sensors_sync_title,
+                R.string.dialog_wake_sensors_sync_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.WakeSensorsSync.toString());
+    }
+
+    private void startWakeSensorsRefreshDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_wake_sensors_refresh_title,
+                R.string.dialog_wake_sensors_refresh_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.WakeSensorsRefresh.toString());
+    }
+
+    private void startMonCfgEditDialog() {
+        Intent intent = new Intent(getBaseContext(), MonitoringCfgActivity.class);
+        int monCfgId = mGuardTracker.getMonCfgId();
+//        int guardTrackerId = mGuardTracker.get_id();
+//        boolean createBackup = mGuardTracker.getNext() == null || mGuardTracker.getNext().getMonCfg().equals(mGuardTracker.getMonCfg());
+        intent.putExtra(GuardTrackerActivity.CONFIG_ID, monCfgId);
+//        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
+//        intent.putExtra(GuardTrackerActivity.BACKUP_CREATE, createBackup);
+        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_NAME, mGuardTracker.getName());
+        startActivityForResult(intent, REQUEST_MON_CFG);
+    }
+    private void startMonCfgRestoreDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_mon_cfg_restore_title,
+                R.string.dialog_mon_cfg_restore_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.MonCfgRestore.toString());
+    }
+    private void startMonCfgViewSyncedDialog() {
+        int monCfgId = mGuardTracker.getNext().getMonCfgId();
+        MonitoringCfgBackupViewFragment dialogFragment = new MonitoringCfgBackupViewFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(MonitoringCfgBackupViewFragment.MON_CFG_ID, monCfgId);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, /*DialogFragmentTags.WakeSensorsConfig.toString()*/null);
+    }
+
+    private void startMonCfgSyncDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_mon_cfg_sync_title,
+                R.string.dialog_mon_cfg_sync_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.MonCfgSync.toString());
+    }
+
+    private void startMonCfgRefreshDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_mon_cfg_refresh_title,
+                R.string.dialog_mon_cfg_refresh_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.MonCfgRefresh.toString());
+    }
+
+    private void startTrackCfgEditDialog() {
+        Intent intent = new Intent(getBaseContext(), TrackingCfgActivity.class);
+        int trackCfgId = mGuardTracker.getTrackCfgId();
+//        int guardTrackerId = mGuardTracker.get_id();
+//        boolean createBackup = mGuardTracker.getNext() == null || mGuardTracker.getNext().getMonCfg().equals(mGuardTracker.getMonCfg());
+        intent.putExtra(GuardTrackerActivity.CONFIG_ID, trackCfgId);
+//        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
+//        intent.putExtra(GuardTrackerActivity.BACKUP_CREATE, createBackup);
+        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_NAME, mGuardTracker.getName());
+        startActivityForResult(intent, REQUEST_TRACK_CFG);
+    }
+    private void startTrackCfgRestoreDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_track_cfg_restore_title,
+                R.string.dialog_track_cfg_restore_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.TrackCfgRestore.toString());
+    }
+    private void startTrackCfgViewSyncedDialog() {
+        int trackCfgId = mGuardTracker.getNext().getTrackCfgId();
+        TrackingCfgBackupViewFragment dialogFragment = new TrackingCfgBackupViewFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(TrackingCfgBackupViewFragment.TRACK_CFG_ID, trackCfgId);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, /*DialogFragmentTags.WakeSensorsConfig.toString()*/null);
+    }
+
+    private void startTrackCfgSyncDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_track_cfg_sync_title,
+                R.string.dialog_track_cfg_sync_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.TrackCfgSync.toString());
+    }
+
+    private void startTrackCfgRefreshDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_track_cfg_refresh_title,
+                R.string.dialog_track_cfg_refresh_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.TrackCfgRefresh.toString());
+    }
+    private void startVigCfgEditDialog() {
+        Intent intent = new Intent(getBaseContext(), VigilanceCfgActivity.class);
+        int vigCfgId = mGuardTracker.getVigCfgId();
+//        int guardVigId = mGuardTracker.get_id();
+//        boolean createBackup = mGuardTracker.getNext() == null || mGuardTracker.getNext().getVigCfg().equals(mGuardTracker.getVigCfg());
+        intent.putExtra(GuardTrackerActivity.CONFIG_ID, vigCfgId);
+//        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
+//        intent.putExtra(GuardTrackerActivity.BACKUP_CREATE, createBackup);
+        intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_NAME, mGuardTracker.getName());
+        startActivityForResult(intent, REQUEST_MON_CFG);
+    }
+    private void startVigCfgRestoreDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_vig_cfg_restore_title,
+                R.string.dialog_vig_cfg_restore_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.VigCfgRestore.toString());
+    }
+    private void startVigCfgViewSyncedDialog() {
+        int vigCfgId = mGuardTracker.getNext().getVigCfgId();
+        VigilanceCfgBackupViewFragment dialogFragment = new VigilanceCfgBackupViewFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(VigilanceCfgBackupViewFragment.VIG_CFG_ID, vigCfgId);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, /*DialogFragmentTags.WakeSensorsConfig.toString()*/null);
+    }
+
+    private void startVigCfgSyncDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_vig_cfg_sync_title,
+                R.string.dialog_vig_cfg_sync_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.VigCfgSync.toString());
+    }
+
+    private void startVigCfgRefreshDialog() {
+        startGenericDialog(new DialogGenericIcTtMs2Bt(), new Bundle(), android.R.drawable.ic_dialog_alert,
+                R.string.dialog_vig_cfg_refresh_title,
+                R.string.dialog_vig_cfg_refresh_message_body,
+                android.R.string.yes,
+                android.R.string.no,
+                DialogFragmentTags.VigCfgRefresh.toString());
     }
 
     private void startAddSecondaryContactDialog() {
@@ -565,13 +763,183 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mPosRefGoogleMapsButton.setVisibility(refPos != null ? View.VISIBLE : View.INVISIBLE);
     }
 
+    private void updateBleStatusView() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mBleStatusValueView.setText(mBleState.toString());
+                mBleStatusValueView.setBackgroundColor(mBleState.toBackgroundColor());
+                mBleStatusValueView.setTextColor(mBleState.toForegroundColor());
+                mBleStatusCommandsView.setVisibility(
+                        mBleStatusCommandsButton.getText().equals(getText(R.string.ble_status_view_messages_button_label)) ?
+                                View.GONE :
+                                View.VISIBLE
+                );
+            }
+        });
+    }
     private void updateWakeSensorsView() {
-        updateBleStateAndInvalidateMenu(mBleState);
-        //mSensorsBleStatusView.setText(mBleState.toString());
-        int wakeSensors = mGuardTracker.getWakeSensors();
-        mSensorsProgBleView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_BLE) != 0 ? "BLE on" : "BLE off");
-        mSensorsProgRtcView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_RTC) != 0 ? "RTC on" : "RTC off");
-        mSensorsProgAccView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_ACC) != 0 ? "ACC on" : "ACC off");
+        final int wakeSensors = mGuardTracker.getWakeSensors();
+        ArrayAdapter adapter = (ArrayAdapter)mSensorsConfigSpinner.getAdapter();
+        if (mGuardTracker.getNext() != null &&
+                mGuardTracker.getWakeSensors() != mGuardTracker.getNext().getWakeSensors()) {
+            if (mSensorsConfigSpinner.getCount() == 2) {
+                // Remove/disable spinner config Restore and View Synced items.
+                // IN THE FUTURE, TURN DISABLE/ENABLE ITEMS
+                // Not so easy as remove the view. It seems the ArrayAdapter class should be extended
+                // and some methods must be override
+                adapter.add(getResources().getString(R.string.restore_synced));
+                adapter.add(getResources().getString(R.string.view_synced));
+            }
+        } else if (mSensorsConfigSpinner.getCount() > 2) {
+            adapter.remove(getResources().getString(R.string.restore_synced));
+            adapter.remove(getResources().getString(R.string.view_synced));
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSensorsSyncSpinner.setEnabled(isBleConnectionValid());
+
+                ImageView accImageView = findViewById(R.id.sensors_acc_img_view);
+                accImageView.setColorFilter((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_ACC) != 0 ? 0xFF0000 : 0x00FF00);
+                ImageView rtcImageView = findViewById(R.id.sensors_rtc_img_view);
+                rtcImageView.setColorFilter((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_RTC) != 0 ? 0xFF0000 : 0x00FF00);
+                ImageView bleImageView = findViewById(R.id.sensors_ble_img_view);
+                bleImageView.setColorFilter((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_BLE) != 0 ? 0xFF0000 : 0x00FF00);
+
+                mSensorsConfigBleView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_BLE) != 0 ? getText(R.string.enable) : getText(R.string.disable));
+                mSensorsConfigRtcView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_RTC) != 0 ? getText(R.string.enable) : getText(R.string.disable));
+                mSensorsConfigAccView.setText((wakeSensors & WakeSensorsConfigDialogFragment.BITMASK_ACC) != 0 ? getText(R.string.enable) : getText(R.string.disable));
+                mSensorsSyncedStateView.setVisibility (
+                        mGuardTracker.getNext() != null && mGuardTracker.getSync() == false && mGuardTracker.getNext().getWakeSensors() != wakeSensors ?
+                                View.VISIBLE :
+                                View.GONE
+                );
+
+            }
+        });
+    }
+
+    private void updateMonCfgView() {
+        final String date;
+        MonitoringConfiguration monCfg = mGuardTracker.getMonCfg();
+        int periodMin = monCfg.getPeriodMin();
+        int modMonCfg = monCfg.getTimeMod();
+        MonitoringInfo tmpLastMonInfo = mGuardTracker.getLastMonInfo();
+        if (tmpLastMonInfo != null) {
+            long dateInMillis = tmpLastMonInfo.getDate().getTime();
+            dateInMillis += (periodMin * 60 * 1000);
+            date = String.format("%1$td/%1$tm/%1$tY %1$tR", dateInMillis); // 1$ = index og argument
+        } else {
+            Calendar now = Calendar.getInstance();
+            if (periodMin >= 24 * 60) {
+                int nowHour = now.get(Calendar.HOUR_OF_DAY);
+                int nowMinute = now.get(Calendar.MINUTE);
+                long nowInMillis = now.getTimeInMillis();
+                now.set(Calendar.HOUR_OF_DAY, modMonCfg / 60); // Adjust to alarm time (hours)
+                now.set(Calendar.MINUTE, modMonCfg % 60);      // Adjust to alarm time (minutes)
+                long dateInMillis = now.getTimeInMillis();
+                if (nowInMillis > dateInMillis) {
+                    dateInMillis += 24 * 60 * 60 * 1000; // Add 1 day to wake alert time
+                }
+                date = String.format("%1$td/%1$tm/%1$tY %1$tR", dateInMillis); // 1$ = index og argument
+            } else {
+                int nextHour = periodMin / 60;
+                int nextMinute = periodMin % 60;
+                date = nextHour == 0 ?
+                        String.format(getString(R.string.mon_cfg_next_wake_in_minutes), nextMinute) :
+                        String.format(getString(R.string.mon_cfg_next_wake_in_hours_minutes), nextHour, nextMinute);
+            }
+        }
+        ArrayAdapter configAdapter = (ArrayAdapter) mMonCfgConfigSpinner.getAdapter();
+        if (mGuardTracker.getNext() != null &&
+                mGuardTracker.getMonCfg().equals(mGuardTracker.getNext().getMonCfg()) == false) {
+            if (mMonCfgConfigSpinner.getCount() == 2) {
+                // Remove/disable spinner config Restore and View Synced items.
+                // IN THE FUTURE, TURN DISABLE/ENABLE ITEMS
+                // Not so easy as remove the view. It seems the ArrayAdapter class should be extended
+                // and some methods must be override
+                configAdapter.add(getResources().getString(R.string.restore_synced));
+                configAdapter.add(getResources().getString(R.string.view_synced));
+            }
+        } else if (mMonCfgConfigSpinner.getCount() > 2) {
+            configAdapter.remove(getResources().getString(R.string.restore_synced));
+            configAdapter.remove(getResources().getString(R.string.view_synced));
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mMonCfgSyncSpinner.setEnabled(isBleConnectionValid());
+                mMonCfgDatetimeView.setText(date);
+                mMonCfgSyncedStateView.setVisibility (
+                        mGuardTracker.getNext() != null &&
+                                mGuardTracker.getSync() == false &&
+                                mGuardTracker.getMonCfg().equals(mGuardTracker.getNext().getMonCfg()) == false?
+                                View.VISIBLE : View.GONE
+                );
+
+            }
+        });
+    }
+    private void updateTrackCfgView() {
+        ArrayAdapter configAdapter = (ArrayAdapter) mTrackCfgConfigSpinner.getAdapter();
+        if (mGuardTracker.getNext() != null &&
+                mGuardTracker.getTrackCfg().equals(mGuardTracker.getNext().getTrackCfg()) == false) {
+            if (mTrackCfgConfigSpinner.getCount() == 2) {
+                // Remove/disable spinner config Restore and View Synced items.
+                // IN THE FUTURE, TURN DISABLE/ENABLE ITEMS
+                // Not so easy as remove the view. It seems the ArrayAdapter class should be extended
+                // and some methods must be override
+                configAdapter.add(getResources().getString(R.string.restore_synced));
+                configAdapter.add(getResources().getString(R.string.view_synced));
+            }
+        } else if (mTrackCfgConfigSpinner.getCount() > 2) {
+            configAdapter.remove(getResources().getString(R.string.restore_synced));
+            configAdapter.remove(getResources().getString(R.string.view_synced));
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mTrackCfgSyncSpinner.setEnabled(isBleConnectionValid());
+                mTrackCfgSyncedStateView.setVisibility (
+                        mGuardTracker.getNext() != null &&
+                                mGuardTracker.getSync() == false &&
+                                mGuardTracker.getTrackCfg().equals(mGuardTracker.getNext().getTrackCfg()) == false?
+                                View.VISIBLE : View.GONE
+                );
+
+            }
+        });
+    }
+    private void updateVigCfgView() {
+        ArrayAdapter configAdapter = (ArrayAdapter) mVigCfgConfigSpinner.getAdapter();
+        if (mGuardTracker.getNext() != null &&
+                mGuardTracker.getVigCfg().equals(mGuardTracker.getNext().getVigCfg()) == false) {
+            if (mVigCfgConfigSpinner.getCount() == 2) {
+                // Remove/disable spinner config Restore and View Synced items.
+                // IN THE FUTURE, TURN DISABLE/ENABLE ITEMS
+                // Not so easy as remove the view. It seems the ArrayAdapter class should be extended
+                // and some methods must be override
+                configAdapter.add(getResources().getString(R.string.restore_synced));
+                configAdapter.add(getResources().getString(R.string.view_synced));
+            }
+        } else if (mVigCfgConfigSpinner.getCount() > 2) {
+            configAdapter.remove(getResources().getString(R.string.restore_synced));
+            configAdapter.remove(getResources().getString(R.string.view_synced));
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mVigCfgSyncSpinner.setEnabled(isBleConnectionValid());
+                mVigCfgSyncedStateView.setVisibility (
+                        mGuardTracker.getNext() != null &&
+                                mGuardTracker.getSync() == false &&
+                                mGuardTracker.getVigCfg().equals(mGuardTracker.getNext().getVigCfg()) == false?
+                                View.VISIBLE : View.GONE
+                );
+
+            }
+        });
     }
 
     private void updateSecondaryContactsView() {
@@ -584,9 +952,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         for (int i = 0; i < mContactsSecondaryList.size(); i++) {
             View view = getLayoutInflater().inflate(R.layout.list_item_label_value_text, null);
             System.out.println(view);
-            TextView label = (TextView) view.findViewById(R.id.text1);
+            TextView label = view.findViewById(R.id.text1);
             label.setText("Contact " + (i + 1) + ":");
-            TextView value = (TextView) view.findViewById(R.id.text2);
+            TextView value = view.findViewById(R.id.text2);
             value.setText(mContactsSecondaryList.get(i));
             mContactsSecondaryViewGroup.addView(view);
         }
@@ -599,6 +967,15 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mContactsOwnerView.setText(mGuardTracker.getOwnerPhoneNumber());
     }
 
+    private void bleStatusCommandsViewAppendMessage(String preamble, byte [] message) {
+        StringBuilder sb = new StringBuilder(preamble).append(preamble.equals("Tx") ? " > " : " < ");
+        for (int i = 0; i < message.length; i++) {
+            sb.append(String.format("%02h ", message[i]));
+        }
+        sb.append('\n');
+        mBleStatusCommandsView.append(sb);
+    }
+
     private void onClickChangeDeviceNickname(String nickname) {
         // Update model
         mGuardTracker.setName(nickname);
@@ -606,7 +983,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mGuardTracker.update(getBaseContext());
         // Update view
         updateNicknameView();
-        Toast.makeText(getBaseContext(), R.string.dialog_nickname_success, Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), R.string.dialog_nickname_successful, Toast.LENGTH_LONG).show();
     }
 
     private void onClickChangeDevicePhoneNumber(String phoneNumber) {
@@ -624,6 +1001,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_REF_POS.ordinal();
                 if (msg[0] != ordinal) {
@@ -665,7 +1045,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 mGuardTracker.update(getBaseContext());
                 // Update view;
                 updateReferencePositionView();
-                Toast.makeText(getBaseContext(), R.string.refresh_pos_ref_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.refresh_pos_ref_successful, Toast.LENGTH_LONG).show();
             }
 
 //            @Override
@@ -673,12 +1053,17 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private class PendingNewRefPosMessageListener implements BleMessageListener {
 
         @Override
         public void onMessageReceived(byte[] msgRecv) {
+            // Dump received message
+            bleStatusCommandsViewAppendMessage("Rx", msgRecv);
+
             // Test if answer belongs with this command
             byte ordinal = (byte) GuardTrackerCommands.CommandValues.RST_REF_POS.ordinal();
             if (msgRecv[0] != ordinal) {
@@ -703,7 +1088,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 return;
             }
             // else CMD_RES_OK
-            Toast.makeText(getBaseContext(), R.string.toast_pos_ref_success, Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), R.string.toast_pos_ref_successful, Toast.LENGTH_LONG).show();
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -711,11 +1096,6 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 }
             }, 200);
         }
-
-//        @Override
-//        public void onMessageSent(byte[] msgSent) {
-//
-//        }
     }
 
     private PendingNewRefPosMessageListener mPendRefPosMessageListener;
@@ -725,6 +1105,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.RST_REF_POS.ordinal();
                 if (msg[0] != ordinal) {
@@ -754,7 +1137,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                     return;
                 }
                 // else CMD_RES_OK
-                Toast.makeText(getBaseContext(), R.string.toast_pos_ref_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.toast_pos_ref_successful, Toast.LENGTH_LONG).show();
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -768,6 +1151,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void refPosButtonVisibilityUpdate(boolean pending) {
@@ -781,6 +1167,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte stopPendingOrdinal = (byte) GuardTrackerCommands.CommandValues.STOP_PENDING_CMD.ordinal();
                 byte newPosRefCmdOrdinal = (byte) GuardTrackerCommands.CommandValues.RST_REF_POS.ordinal();
@@ -798,28 +1187,129 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 Toast.makeText(getBaseContext(),
                         msg[1] == GuardTrackerCommands.CmdResValues.CMD_RES_KO.value()
                                 ? R.string.toast_pos_ref_cancel_unsuccessful
-                                : R.string.toast_pos_ref_cancel_success, Toast.LENGTH_LONG).show();
+                                : R.string.toast_pos_ref_cancel_successful, Toast.LENGTH_LONG).show();
                 refPosButtonVisibilityUpdate(false);
             }
-
-//            @Override
-//            public void onMessageSent(byte[] msgSent) {
-//
-//            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
+
+    /**
+     * Create backup of GuardTracker.
+     * This method does not update current GuardTracker in database, only the backup.
+     */
+    private void createBackup() {
+        // Clone GuardTracker
+        // In the domain of this application, there is only one backup per GuardTracker,
+        // so sync and next fields are always true and null, respectively.
+        // Cloning GuardTracker with getSync and getNext returning values instead of true and null literals,
+        // enables an hypothetical solution with a chain of backups.
+        GuardTracker backup = new GuardTracker(
+                mGuardTracker.getName(),
+                mGuardTracker.getBleId(),
+                mGuardTracker.getGsmId(),
+                mGuardTracker.getOwnerPhoneNumber(),
+                mGuardTracker.getWakeSensors(),
+                mGuardTracker.getPosRef(),
+                mGuardTracker.getLastMonInfo(),
+                mGuardTracker.getMonCfg(),
+                mGuardTracker.getTrackCfg(),
+                mGuardTracker.getVigCfg(),
+                mGuardTracker.getSync(), mGuardTracker.getNext()
+        );
+        // Create backup in database
+        backup.create(getBaseContext());
+        // Set backup in GuardTracker
+        mGuardTracker.setNext(backup);
+        // There is no need to update GuardTracker database here because it will be updated above.
+    }
+
+
+    ///
+    /// Wake Sensors onClick button events
+
+    private void onClickWakeSensorsSync() {
+        byte[] cmd = GuardTrackerCommands.setWakeSensors((short) mGuardTracker.getWakeSensors());
+        mBleConnControl.sendCommand(cmd, new BleMessageListener() {
+            @Override
+            public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
+                // Test if answer belongs with this command
+                byte ordinal = (byte) GuardTrackerCommands.CommandValues.WAKE_SENSORS.ordinal();
+                if (msg[0] != ordinal) {
+                    Log.w(TAG, "Command id ("+ msg[0] + ") does not corresponds to Wake sensors ordinal id (" + ordinal + ")");
+                    return;
+                }
+
+                if (msg[1] == GuardTrackerCommands.CmdResValues.CMD_RES_KO.value()) {
+                    Toast.makeText(GuardTrackerActivity.this.getBaseContext(),
+                            R.string.dialog_wake_sensors_message_unsuccessful_write,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                GuardTracker backup = mGuardTracker.getNext();
+                // Delete backup if there aren't any more differences.
+                if (backup != null) {
+                    if (backup.equals(mGuardTracker)) {
+                        // Perform a flat delete (not a deep delete)
+                        backup.delete(getBaseContext());
+                        mGuardTracker.setNext(null);
+                        mGuardTracker.update(getBaseContext());
+                    } else {
+                        // Else update backup entry
+                        backup.setWakeSensors(mGuardTracker.getWakeSensors());
+                        backup.update(getBaseContext());
+                    }
+                }
+                // Update view
+                updateWakeSensorsView();
+                Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
+    }
+    private void onClickWakeSensorsRestore() {
+
+        mGuardTracker.setWakeSensors(mGuardTracker.getNext().getWakeSensors());
+
+        // Delete backup if there aren't any more differences.
+        if (mGuardTracker.getNext().equals(mGuardTracker)) {
+            // Perform a flat delete (not a deep delete)
+            mGuardTracker.getNext().delete(getBaseContext());
+            mGuardTracker.setNext(null);
+            // Not doing GuardTracker update here because it will be done always above.
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateWakeSensorsView();
+
+        Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_successful, Toast.LENGTH_LONG).show();
+
+    }
+//    private void onClickWakeSensorsViewSynced() {
+//
+//    }
     private void onClickWakeSensorsRefresh() {
         byte[] cmd = GuardTrackerCommands.readWakeSensors();
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_WAKE_SENSORS_STATE.ordinal();
                 if (msg[0] != ordinal) {
-//                    Toast.makeText(getBaseContext(),
-//                            "BLE answer (" + msg[0] + ") don't belong to cmd READ_WAKE_SENSORS_STATE (" + ordinal + ")",
-//                            Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "Command id ("+ msg[0] + ") does not corresponds to Wake sensors ordinal id (" + ordinal + ")");
                     return;
                 }
 
@@ -832,54 +1322,646 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 // Parse ble message args
                 short bitmask = (short) ((msg[2] << 8) | (msg[3] << 0));
                 mGuardTracker.setWakeSensors(bitmask & 0xFFFF);
+
+                GuardTracker backup = mGuardTracker.getNext();
+                if (backup != null) {
+                    // Delete backup if there aren't any more differences.
+                    if (backup.equals(mGuardTracker)) {
+                        // Perform a flat delete (not a deep delete)
+                        backup.delete(getBaseContext());
+                        mGuardTracker.setNext(null);
+                        // Not doing GuardTracker update here because it will be done always above.
+                    }
+                } else {
+                    // Else update backup entry
+                    backup.setWakeSensors(mGuardTracker.getWakeSensors());
+                    backup.update(getBaseContext());
+                }
                 // Update database
                 mGuardTracker.update(getBaseContext());
                 // Update view
                 updateWakeSensorsView();
-                Toast.makeText(getBaseContext(), R.string.refresh_wake_sensors_message_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_successful, Toast.LENGTH_LONG).show();
             }
-
-//            @Override
-//            public void onMessageSent(byte[] msgSent) {
-//
-//            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void onClickWakeSensorsConfig(int bitmask) {
-        byte[] cmd = GuardTrackerCommands.setWakeSensors((short) bitmask);
+        // Do not do anything if the new wake sensors value has the same value that current wake sensors value.
+        if (bitmask == mGuardTracker.getWakeSensors()) {
+            Toast.makeText(getBaseContext(), R.string.nothing_to_do, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create a backup only if there are no backup created
+        if (mGuardTracker.getNext() == null) {
+            createBackup();
+        }
+
+        mGuardTracker.setWakeSensors(bitmask & 0xFFFF);
+        // New wake sensors value may be equals to original value.
+        if (mGuardTracker.getWakeSensors() == mGuardTracker.getNext().getWakeSensors()) {
+            // Delete backup if there aren't any more differences.
+            if (mGuardTracker.getNext().equals(mGuardTracker)) {
+                // Perform a flat delete (not a deep delete)
+                mGuardTracker.getNext().delete(getBaseContext());
+                mGuardTracker.setNext(null);
+                // Not doing GuardTracker update here because it will be done always above.
+            }
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateWakeSensorsView();
+        Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_successful, Toast.LENGTH_LONG).show();
+
+    }
+
+
+    ///
+    /// Mon configuration onClick button events
+
+    private void onClickMonCfgSync() {
+        SyncConfigWorkflow monCfgSync = new SyncConfigWorkflow(mBleConnControl, new SyncConfigCmdProcessedListener() {
+            @Override
+            public void onCommandProcessed(GuardTrackerCommands.CommandValues cmdValue, GuardTrackerCommands.CmdResValues res) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", new byte[] { (byte)cmdValue.value(), (byte)res.value() });
+
+                Log.i(GuardTrackerActivity.TAG, "Cmd id: " + cmdValue.toString() + ", Res: " + res.toString());
+            }
+        }, new SyncConfigFinishListener() {
+            @Override
+            public void onFinishSyncConfig() {
+                MonitoringConfiguration monCfg = mGuardTracker.getMonCfg();
+                GuardTracker backup = mGuardTracker.getNext();
+                // Two different entries in Monitoring Configuration table may have different states.
+                // In that case, one of the entries must be deleted.
+                // But, both mGuardTracker and respective backup may refer to the same entry in Monitoring Configuration table.
+                // In that case, the entry must not be deleted.
+                if (backup != null) {
+                    //if (mGuardTracker.getMonCfgId() != backup.getMonCfgId()) {
+                    if (monCfg.equals(backup.getMonCfg()) == false) {
+                        // Delete mon cfg backup from database. Backup and current config values are equals.
+                        backup.getMonCfg().delete(getBaseContext());
+                        backup.setMonCfg(monCfg);
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+
+                        // Update database
+                        mGuardTracker.update(getBaseContext());
+                        // Update view
+                        updateMonCfgView();
+                    }
+                }
+                Toast.makeText(getBaseContext(), R.string.dialog_dev_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+        MonitoringConfiguration monCfg = mGuardTracker.getMonCfg();
+        monCfgSync.addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_TIME, monCfg.getTimeMod()))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_PERIOD, monCfg.getPeriodMin()))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_SMS_CRITERIA, monCfg.getSmsCriteria().ordinal()))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_GPS_THRESHOLD, monCfg.getGpsThresholdMeters(),
+                        MonitoringConfiguration.getRawGpsThresholdLat(monCfg.getGpsThresholdMeters()),
+                        MonitoringConfiguration.getRawGpsThresholdLon(monCfg.getGpsThresholdMeters())))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_GPS_FOV, monCfg.getGpsFov()))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_GPS_TIMEOUT, monCfg.getGpsTimeout()))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_TEMP,
+                        MonitoringConfiguration.getRawTemp(monCfg.getTempHigh()),
+                        MonitoringConfiguration.getRawTemp(monCfg.getTempLow())))
+                .addCommand(GuardTrackerCommands.writeMonitoringConfig(GuardTrackerCommands.MonCfgItems.MON_CFG_SIM_BALANCE,
+                        MonitoringConfiguration.getRawSimBalance(monCfg.getSimBalanceThreshold())))
+                .startSync();
+
+
+    }
+    private void onClickMonCfgRestore() {
+
+        // Delete monitoring config backup database entry.
+        GuardTracker backup = mGuardTracker.getNext();
+        MonitoringConfiguration monCfgBackup = backup.getMonCfg();
+        mGuardTracker.getMonCfg().delete(getBaseContext());
+        mGuardTracker.setMonCfg(monCfgBackup);
+
+        // Delete backup if there aren't any more differences.
+        if (backup.equals(mGuardTracker)) {
+            // Perform a flat delete (not a deep delete)
+            backup.delete(getBaseContext());
+            mGuardTracker.setNext(null);
+            // Not doing GuardTracker update here because it will be done always above.
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateMonCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+
+    }
+//    private void onClickMonCfgViewSynced() {
+//
+//    }
+    private void onClickMonCfgRefresh() {
+        byte[] cmd = GuardTrackerCommands.readMonitoringConfig();
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
-                byte ordinal = (byte) GuardTrackerCommands.CommandValues.WAKE_SENSORS.ordinal();
+                byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_MONITORING_CFG.ordinal();
                 if (msg[0] != ordinal) {
-//                    Toast.makeText(getBaseContext(),
-//                            "BLE answer (" + msg[0] + ") don't belong to cmd WAKE_SENSORS (" + ordinal + ")",
-//                            Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "Command id ("+ msg[0] + ") does not corresponds to monitoring configuration ordinal id (" + ordinal + ")");
                     return;
                 }
 
                 if (msg[1] == GuardTrackerCommands.CmdResValues.CMD_RES_KO.value()) {
                     Toast.makeText(GuardTrackerActivity.this.getBaseContext(),
-                            R.string.dialog_wake_sensors_message_unsuccessful_write,
+                            R.string.dialog_db_message_unsuccessful,
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_success, Toast.LENGTH_LONG).show();
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        onClickWakeSensorsRefresh();
-                    }
-                }, 200);
-            }
 
-//            @Override
-//            public void onMessageSent(byte[] msgSent) {
-//
-//            }
+                // Parse ble message into temporally monCfg object.
+                MonitoringConfiguration devMonCfg = new MonitoringConfiguration();
+                int cfgLen = 19;
+                byte [] cfgData = new byte[cfgLen];
+                System.arraycopy(msg, 2, cfgData, 0, cfgLen);
+                // Decode received message and build object.
+                devMonCfg.parse(cfgData);
+
+                GuardTracker backup = mGuardTracker.getNext();
+                if (backup == null) {
+                    devMonCfg.set_id(mGuardTracker.getMonCfg().get_id());
+                    mGuardTracker.setMonCfg(devMonCfg);
+                } else {
+                    MonitoringConfiguration backupMonCfg = backup.getMonCfg();
+                    MonitoringConfiguration monCfg = mGuardTracker.getMonCfg();
+                    devMonCfg.set_id(backupMonCfg.get_id());
+                    backup.setMonCfg(devMonCfg);
+                    mGuardTracker.setMonCfg(devMonCfg);
+                    // Different actions based on same monitoring configuration or not.
+                    if (backupMonCfg.equals(monCfg) == false) {
+                        monCfg.delete(getBaseContext());
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+                    }
+                }
+                mGuardTracker.getMonCfg().update(getBaseContext());
+                // Update database
+                mGuardTracker.update(getBaseContext());
+                // Update view
+                updateMonCfgView();
+                Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
+    }
+
+    private void onClickMonCfgEdit(int newMonId) {
+        MonitoringConfiguration newMonCfg = MonitoringConfiguration.read(getBaseContext(), newMonId);
+
+        // Create backup if not backed up.
+        if (mGuardTracker.getNext() == null) {
+            // Create backup of GuardTracker
+            createBackup();
+        }
+        GuardTracker backup = mGuardTracker.getNext();
+        MonitoringConfiguration backupMonCfg = backup.getMonCfg();
+        MonitoringConfiguration monCfg = mGuardTracker.getMonCfg();
+        // Create new backup of monitoring configuration in both no backup and same backup scenarios.
+        if (backupMonCfg.equals(monCfg)) {
+            // mGuardTracker and backup has same monCfg.
+            // It includes the no backup scenario because in that scenario, mGuardTracker has a backup
+            // created above with same monitoring configuration
+            mGuardTracker.setMonCfg(newMonCfg);
+        } else {
+            // mGuardTracker and backup has different monCfg.
+            // Delete actual monitoring configuration entry
+            monCfg.delete(getBaseContext());
+            if (newMonCfg.equals(backupMonCfg)) {
+                // new configurations match last synced values
+                newMonCfg.delete(getBaseContext());
+                // set actual monitoring configuration to last synced values.
+                mGuardTracker.setMonCfg(backupMonCfg);
+                // Delete backup if there aren't any more differences.
+                if (mGuardTracker.equals(backup)) {
+//                    deleteBackup();
+                    // Perform a flat delete (not a deep delete)
+                    backup.delete(getBaseContext());
+                    mGuardTracker.setNext(null);
+                    // Not doing GuardTracker update here because it will be done always above.
+                }
+            } else {
+                // new configurations does not match synced values, so substitutes with new one.
+                mGuardTracker.setMonCfg(newMonCfg);
+            }
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateMonCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+    }
+
+    ///
+    /// Track configuration onClick button events
+
+    private void onClickTrackCfgSync() {
+        SyncConfigWorkflow trackCfgSync = new SyncConfigWorkflow(mBleConnControl, new SyncConfigCmdProcessedListener() {
+            @Override
+            public void onCommandProcessed(GuardTrackerCommands.CommandValues cmdValue, GuardTrackerCommands.CmdResValues res) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", new byte[] { (byte)cmdValue.value(), (byte)res.value() });
+
+                Log.i(GuardTrackerActivity.TAG, "Cmd id: " + cmdValue.toString() + ", Res: " + res.toString());
+            }
+        }, new SyncConfigFinishListener() {
+            @Override
+            public void onFinishSyncConfig() {
+                TrackingConfiguration trackCfg = mGuardTracker.getTrackCfg();
+                GuardTracker backup = mGuardTracker.getNext();
+                // Two different entries in Monitoring Configuration table may have different states.
+                // In that case, one of the entries must be deleted.
+                // But, both mGuardTracker and respective backup may refer to the same entry in Monitoring Configuration table.
+                // In that case, the entry must not be deleted.
+                if (backup != null) {
+                    //if (mGuardTracker.getTrackCfgId() != backup.getTrackCfgId()) {
+                    if (trackCfg.equals(backup.getTrackCfg()) == false) {
+                        // Delete Track cfg backup from database. Backup and current config values are equals.
+                        backup.getTrackCfg().delete(getBaseContext());
+                        backup.setTrackCfg(trackCfg);
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+
+                        // Update database
+                        mGuardTracker.update(getBaseContext());
+                        // Update view
+                        updateTrackCfgView();
+                    }
+                }
+                Toast.makeText(getBaseContext(), R.string.dialog_dev_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+        TrackingConfiguration trackCfg = mGuardTracker.getTrackCfg();
+        trackCfgSync.addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_SMS_CRITERIA, trackCfg.getSmsCriteria().ordinal()))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_GPS_THRESHOLD, trackCfg.getGpsThreshold(),
+                        MonitoringConfiguration.getRawGpsThresholdLat(trackCfg.getGpsThreshold()), // getRawGPS... is a static method
+                        MonitoringConfiguration.getRawGpsThresholdLon(trackCfg.getGpsThreshold())))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_GPS_FOV, trackCfg.getGpsFov()))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_GPS_TIMEOUT, trackCfg.getGpsTimeout()))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_TIMEOUT_POST, trackCfg.getTimeoutPost()))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_TIMEOUT_PRE, trackCfg.getTimeoutPre()))
+                .addCommand(GuardTrackerCommands.writeTrackingConfig(GuardTrackerCommands.TrackCfgItems.TRACK_CFG_TIMEOUT_TRACKING, trackCfg.getTimeoutTracking()))
+                .startSync();
+
+
+    }
+    private void onClickTrackCfgRestore() {
+
+        // Delete monitoring config backup database entry.
+        GuardTracker backup = mGuardTracker.getNext();
+        TrackingConfiguration trackCfgBackup = backup.getTrackCfg();
+        mGuardTracker.getTrackCfg().delete(getBaseContext());
+        mGuardTracker.setTrackCfg(trackCfgBackup);
+
+        // Delete backup if there aren't any more differences.
+        if (backup.equals(mGuardTracker)) {
+            // Perform a flat delete (not a deep delete)
+            backup.delete(getBaseContext());
+            mGuardTracker.setNext(null);
+            // Not doing GuardTracker update here because it will be done always above.
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateTrackCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+
+    }
+    //    private void onClickMonCfgViewSynced() {
+//
+//    }
+    private void onClickTrackCfgRefresh() {
+        byte[] cmd = GuardTrackerCommands.readTrackingConfig();
+        mBleConnControl.sendCommand(cmd, new BleMessageListener() {
+            @Override
+            public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
+                // Test if answer belongs with this command
+                byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_TRACKING_CFG.ordinal();
+                if (msg[0] != ordinal) {
+                    Log.w(TAG, "Command id ("+ msg[0] + ") does not corresponds to monitoring configuration ordinal id (" + ordinal + ")");
+                    return;
+                }
+
+                if (msg[1] == GuardTrackerCommands.CmdResValues.CMD_RES_KO.value()) {
+                    Toast.makeText(GuardTrackerActivity.this.getBaseContext(),
+                            R.string.dialog_db_message_unsuccessful,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Parse ble message into temporally trackCfg object.
+                TrackingConfiguration devTrackCfg = new TrackingConfiguration();
+                int cfgLen = 19;
+                byte [] cfgData = new byte[cfgLen];
+                System.arraycopy(msg, 2, cfgData, 0, cfgLen);
+                // Decode received message and build object.
+                devTrackCfg.parse(cfgData);
+
+                GuardTracker backup = mGuardTracker.getNext();
+                if (backup == null) {
+                    devTrackCfg.set_id(mGuardTracker.getTrackCfg().get_id());
+                    mGuardTracker.setTrackCfg(devTrackCfg);
+                } else {
+                    TrackingConfiguration backupTrackCfg = backup.getTrackCfg();
+                    TrackingConfiguration trackCfg = mGuardTracker.getTrackCfg();
+                    devTrackCfg.set_id(backupTrackCfg.get_id());
+                    backup.setTrackCfg(devTrackCfg);
+                    mGuardTracker.setTrackCfg(devTrackCfg);
+                    // Different actions based on same tracking configuration or not.
+                    if (backupTrackCfg.equals(trackCfg) == false) {
+                        trackCfg.delete(getBaseContext());
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+                    }
+                }
+                mGuardTracker.getTrackCfg().update(getBaseContext());
+                // Update database
+                mGuardTracker.update(getBaseContext());
+                // Update view
+                updateTrackCfgView();
+                Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
+    }
+
+    private void onClickTrackCfgEdit(int newTrackId) {
+        TrackingConfiguration newTrackCfg = TrackingConfiguration.read(getBaseContext(), newTrackId);
+
+        // Create backup if not backed up.
+        if (mGuardTracker.getNext() == null) {
+            // Create backup of GuardTracker
+            createBackup();
+        }
+        GuardTracker backup = mGuardTracker.getNext();
+        TrackingConfiguration backupTrackCfg = backup.getTrackCfg();
+        TrackingConfiguration trackCfg = mGuardTracker.getTrackCfg();
+        // Create new backup of tracking configuration in both no backup and same backup scenarios.
+        if (backupTrackCfg.equals(trackCfg)) {
+            // mGuardTracker and backup has same trackCfg.
+            // It includes the no backup scenario because in that scenario, mGuardTracker has a backup
+            // created above with same monitoring configuration
+            mGuardTracker.setTrackCfg(newTrackCfg);
+        } else {
+            // mGuardTracker and backup has different trackCfg.
+            // Delete actual tracking configuration entry
+            trackCfg.delete(getBaseContext());
+            if (newTrackCfg.equals(backupTrackCfg)) {
+                // new configurations match last synced values
+                newTrackCfg.delete(getBaseContext());
+                // set actual tracking configuration to last synced values.
+                mGuardTracker.setTrackCfg(backupTrackCfg);
+                // Delete backup if there aren't any more differences.
+                if (mGuardTracker.equals(backup)) {
+//                    deleteBackup();
+                    // Perform a flat delete (not a deep delete)
+                    backup.delete(getBaseContext());
+                    mGuardTracker.setNext(null);
+                    // Not doing GuardTracker update here because it will be done always above.
+                }
+            } else {
+                // new configurations does not match synced values, so substitutes with new one.
+                mGuardTracker.setTrackCfg(newTrackCfg);
+            }
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateTrackCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+    }
+
+
+    ///
+    /// Vig configuration onClick button events
+    private void onClickVigCfgSync() {
+        SyncConfigWorkflow vigCfgSync = new SyncConfigWorkflow(mBleConnControl, new SyncConfigCmdProcessedListener() {
+            @Override
+            public void onCommandProcessed(GuardTrackerCommands.CommandValues cmdValue, GuardTrackerCommands.CmdResValues res) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", new byte[] { (byte)cmdValue.value(), (byte)res.value() });
+
+                Log.i(GuardTrackerActivity.TAG, "Cmd id: " + cmdValue.toString() + ", Res: " + res.toString());
+            }
+        }, new SyncConfigFinishListener() {
+            @Override
+            public void onFinishSyncConfig() {
+                VigilanceConfiguration vigCfg = mGuardTracker.getVigCfg();
+                GuardTracker backup = mGuardTracker.getNext();
+                // Two different entries in Vigilance Configuration table may have different states.
+                // In that case, one of the entries must be deleted.
+                // But, both mGuardTracker and respective backup may refer to the same entry in Vigilance Configuration table.
+                // In that case, the entry must not be deleted.
+                if (backup != null) {
+                    //if (mGuardTracker.getVigCfgId() != backup.getVigCfgId()) {
+                    if (vigCfg.equals(backup.getVigCfg()) == false) {
+                        // Delete vigilance cfg backup from database. Backup and current config values are equals.
+                        backup.getVigCfg().delete(getBaseContext());
+                        backup.setVigilanceCfg(vigCfg);
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+
+                        // Update database
+                        mGuardTracker.update(getBaseContext());
+                        // Update view
+                        updateVigCfgView();
+                    }
+                }
+                Toast.makeText(getBaseContext(), R.string.dialog_dev_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+        VigilanceConfiguration vigCfg = mGuardTracker.getVigCfg();
+        vigCfgSync.addCommand(GuardTrackerCommands.writeVigilanceConfig(GuardTrackerCommands.VigCfgItems.VIG_CFG_TILT_LEVEL, vigCfg.getTiltLevel()))
+                .addCommand(GuardTrackerCommands.writeVigilanceConfig(GuardTrackerCommands.VigCfgItems.VIG_CFG_BLE_ADVERTISEMENT_PERIOD, vigCfg.getBleAdvertisePeriod()))
+                .startSync();
+    }
+    private void onClickVigCfgRestore() {
+
+        // Delete vigilance config backup database entry.
+        GuardTracker backup = mGuardTracker.getNext();
+        VigilanceConfiguration vigCfgBackup = backup.getVigCfg();
+        mGuardTracker.getVigCfg().delete(getBaseContext());
+        mGuardTracker.setVigilanceCfg(vigCfgBackup);
+
+        // Delete backup if there aren't any more differences.
+        if (backup.equals(mGuardTracker)) {
+            // Perform a flat delete (not a deep delete)
+            backup.delete(getBaseContext());
+            mGuardTracker.setNext(null);
+            // Not doing GuardTracker update here because it will be done always above.
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateVigCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+
+    }
+    //    private void onClickVigCfgViewSynced() {
+//
+//    }
+    private void onClickVigCfgRefresh() {
+        byte[] cmd = GuardTrackerCommands.readVigilanceConfig();
+        mBleConnControl.sendCommand(cmd, new BleMessageListener() {
+            @Override
+            public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
+                // Test if answer belongs with this command
+                byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_VIGILANCE_CFG.ordinal();
+                if (msg[0] != ordinal) {
+                    Log.w(TAG, "Command id ("+ msg[0] + ") does not corresponds to vigilance configuration ordinal id (" + ordinal + ")");
+                    return;
+                }
+
+                if (msg[1] == GuardTrackerCommands.CmdResValues.CMD_RES_KO.value()) {
+                    Toast.makeText(GuardTrackerActivity.this.getBaseContext(),
+                            R.string.dialog_db_message_unsuccessful,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Parse ble message into temporally vigCfg object.
+                VigilanceConfiguration devVigCfg = new VigilanceConfiguration();
+                int cfgLen = 19;
+                byte [] cfgData = new byte[cfgLen];
+                System.arraycopy(msg, 2, cfgData, 0, cfgLen);
+                // Decode received message and build object.
+                devVigCfg.parse(cfgData);
+
+                GuardTracker backup = mGuardTracker.getNext();
+                if (backup == null) {
+                    devVigCfg.set_id(mGuardTracker.getMonCfg().get_id());
+                    mGuardTracker.setVigilanceCfg(devVigCfg);
+                } else {
+                    VigilanceConfiguration backupVigCfg = backup.getVigCfg();
+                    VigilanceConfiguration vigCfg = mGuardTracker.getVigCfg();
+                    devVigCfg.set_id(backupVigCfg.get_id());
+                    backup.setVigilanceCfg(devVigCfg);
+                    mGuardTracker.setVigilanceCfg(devVigCfg);
+                    // Different actions based on same vigilance configuration or not.
+                    if (backupVigCfg.equals(vigCfg) == false) {
+                        vigCfg.delete(getBaseContext());
+                        // Delete backup if there aren't any more differences.
+                        if (backup.equals(mGuardTracker)) {
+                            // Perform a flat delete (not a deep delete)
+                            backup.delete(getBaseContext());
+                            mGuardTracker.setNext(null);
+                            // Not doing GuardTracker update here because it will be done always above.
+                        } else
+                            backup.update(getBaseContext());
+                    }
+                }
+                mGuardTracker.getVigCfg().update(getBaseContext());
+                // Update database
+                mGuardTracker.update(getBaseContext());
+                // Update view
+                updateVigCfgView();
+                Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
+    }
+
+    private void onClickVigCfgEdit(int newVigId) {
+        VigilanceConfiguration newVigCfg = VigilanceConfiguration.read(getBaseContext(), newVigId);
+
+        // Create backup if not backed up.
+        if (mGuardTracker.getNext() == null) {
+            // Create backup of GuardTracker
+            createBackup();
+        }
+        GuardTracker backup = mGuardTracker.getNext();
+        VigilanceConfiguration backupVigCfg = backup.getVigCfg();
+        VigilanceConfiguration vigCfg = mGuardTracker.getVigCfg();
+        // Create new backup of vigilance configuration in both no backup and same backup scenarios.
+        if (backupVigCfg.equals(vigCfg)) {
+            // mGuardTracker and backup has same vigCfg.
+            // It includes the no backup scenario because in that scenario, mGuardTracker has a backup
+            // created above with same vigilance configuration
+            mGuardTracker.setVigilanceCfg(newVigCfg);
+        } else {
+            // mGuardTracker and backup has different vigCfg.
+            // Delete actual vigilance configuration entry
+            vigCfg.delete(getBaseContext());
+            if (newVigCfg.equals(backupVigCfg)) {
+                // new configurations match last synced values
+                newVigCfg.delete(getBaseContext());
+                // set actual vigilance configuration to last synced values.
+                mGuardTracker.setVigilanceCfg(backupVigCfg);
+                // Delete backup if there aren't any more differences.
+                if (mGuardTracker.equals(backup)) {
+//                    deleteBackup();
+                    // Perform a flat delete (not a deep delete)
+                    backup.delete(getBaseContext());
+                    mGuardTracker.setNext(null);
+                    // Not doing GuardTracker update here because it will be done always above.
+                }
+            } else {
+                // new configurations does not match synced values, so substitutes with new one.
+                mGuardTracker.setVigilanceCfg(newVigCfg);
+            }
+        }
+        // Update database
+        mGuardTracker.update(getBaseContext());
+        // Update view
+        updateVigCfgView();
+        Toast.makeText(getBaseContext(), R.string.dialog_db_message_successful, Toast.LENGTH_LONG).show();
     }
 
     private void onClickOwnerRefresh() {
@@ -887,6 +1969,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msgRecv) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msgRecv);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_OWNER.ordinal();
                 if (msgRecv[0] != ordinal) {
@@ -914,7 +1999,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                     mGuardTracker.update(getBaseContext());
                     // Update view
                     updateOwnerPhoneNumberView();
-                    Toast.makeText(getBaseContext(), R.string.refresh_owner_success, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), R.string.refresh_owner_successful, Toast.LENGTH_LONG).show();
                 } catch (NumberParseException e) {
                     Log.e(TAG, e.getErrorType().toString() + ": " + e.getMessage());
                     Toast.makeText(GuardTrackerActivity.this.getBaseContext(),
@@ -928,6 +2013,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void onClickRstOwner(final String phoneNumber) {
@@ -936,6 +2024,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msgRecv) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msgRecv);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.RST_OWNER.ordinal();
                 if (msgRecv[0] != ordinal) {
@@ -951,7 +2042,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                             Toast.LENGTH_LONG).show();
                     return;
                 }
-                Toast.makeText(getBaseContext(), R.string.dialog_change_owner_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.dialog_change_owner_successful, Toast.LENGTH_LONG).show();
                 // Refresh database with data read from device
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -971,11 +2062,17 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     class ReadSecondaryContactsMessageListener implements BleMessageListener {
         @Override
         public void onMessageReceived(byte[] msgRecv) {
+            // Dump received message
+            bleStatusCommandsViewAppendMessage("Rx", msgRecv);
+
             // Test if answer belongs with this command
             byte ordinal = (byte) GuardTrackerCommands.CommandValues.READ_SECONDARY_CONTACT.ordinal();
             if (msgRecv[0] != ordinal) {
@@ -1005,7 +2102,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 // There are no more secondary contacts
                 // Update view
                 updateSecondaryContactsView();
-                Toast.makeText(getBaseContext(), R.string.refresh_secondary_contacts_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.refresh_secondary_contacts_successful, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -1023,6 +2120,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         // Send command to read first secondary contact
         byte[] cmd = GuardTrackerCommands.readSecondaryContact(1);
         mBleConnControl.sendCommand(cmd, new ReadSecondaryContactsMessageListener());
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void onClickAddSecondaryContact(final String phoneNumber) {
@@ -1031,6 +2131,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.ADD_SECONDARY_CONTACT.ordinal();
                 if (msg[0] != ordinal) {
@@ -1052,7 +2155,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 mGuardTracker.addSecondaryContact(phoneNumber);
                 // Update view
                 updateSecondaryContactsView();
-                Toast.makeText(getBaseContext(), R.string.dialog_add_secondary_contact_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.dialog_add_secondary_contact_successful, Toast.LENGTH_LONG).show();
             }
 
 //            @Override
@@ -1060,14 +2163,20 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void onClickDelSecondaryContact(final String phoneNumber) {
-        // Send command to delete secondary contact
+        // Send command to deleteDeep secondary contact
         byte[] cmd = GuardTrackerCommands.deleteContact(phoneNumber);
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.DELETE_SECONDARY_CONTACT.ordinal();
                 if (msg[0] != ordinal) {
@@ -1089,7 +2198,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 mGuardTracker.removeSecondaryContact(phoneNumber);
                 // Update view
                 updateSecondaryContactsView();
-                Toast.makeText(getBaseContext(), R.string.dialog_delete_secondary_contact_success, Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), R.string.dialog_delete_secondary_contact_successful, Toast.LENGTH_LONG).show();
             }
 
 //            @Override
@@ -1097,11 +2206,14 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
     }
 
     private void onClickResyncAppWithDevice() {
         mTempGuardTracker = new GuardTracker();
-        mSyncConfigWorkflow = new GuardTrackerSyncConfigWorkflow(mBleConnControl, new GuardTrackerSyncConfigListener() {
+        mSyncConfigWorkflow = new SyncConfigWorkflow(mBleConnControl, new SyncConfigFromDevListener() {
             @Override
             public void onMonitoringConfigReceived(MonitoringConfiguration monCfg) {
                 mTempGuardTracker.setMonCfg(monCfg);
@@ -1142,6 +2254,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 mTempGuardTracker.addSecondaryContact(secondaryPhoneNumber);
             }
 
+        }, new SyncConfigFinishListener() {
             @Override
             public void onFinishSyncConfig() {
                 // Delete local configurations before update
@@ -1174,12 +2287,12 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 mGuardTracker.copyConfigs(mTempGuardTracker);
                 // Update GuardTracker
                 mGuardTracker.update(GuardTrackerActivity.this.getBaseContext());
-                Toast.makeText(getBaseContext(), R.string.dialog_resync_app_success, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), R.string.dialog_resync_app_successful, Toast.LENGTH_SHORT).show();
                 GuardTrackerActivity.this.recreate();
             }
         });
 
-        mSyncConfigWorkflow.startSync();
+        mSyncConfigWorkflow.startCompleteSyncFromDev();
     }
 
     private void onClickResetFactoryDefaults() {
@@ -1188,6 +2301,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         mBleConnControl.sendCommand(cmd, new BleMessageListener() {
             @Override
             public void onMessageReceived(byte[] msg) {
+                // Dump received message
+                bleStatusCommandsViewAppendMessage("Rx", msg);
+
                 // Test if answer belongs with this command
                 byte ordinal = (byte) GuardTrackerCommands.CommandValues.CLEAN_E2PROM.ordinal();
                 if (msg[0] != ordinal) {
@@ -1205,9 +2321,9 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                 }
                 // Update database
                 int id = mGuardTrackerId;
-                boolean deviceEliminated = GuardTracker.delete(getBaseContext(), id);
+                boolean deviceEliminated = GuardTracker.deleteDeep(getBaseContext(), id);
                 Toast.makeText(getBaseContext(), deviceEliminated ?
-                                R.string.dialog_factory_defaults_success :
+                                R.string.dialog_factory_defaults_successful :
                                 R.string.dialog_factory_defaults_unsuccessful_read,
                         Toast.LENGTH_LONG).show();
 
@@ -1219,6 +2335,37 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //
 //            }
         });
+
+        // Dump transmitted message
+        bleStatusCommandsViewAppendMessage("Tx", cmd);
+    }
+
+    private class MySpinnerAdapter<T> extends ArrayAdapter<T> {
+
+        public MySpinnerAdapter(Context context, int layoutRes, T [] array) {
+            super(context, layoutRes, array);
+        }
+        public MySpinnerAdapter(Context context, int layoutRes, List<T> list) {
+            super(context, layoutRes, list);
+        }
+
+        @Override
+        public boolean isEnabled(int position){
+            // Disable the first item from Spinner
+            // First item will be use for hint
+            return position != 0;
+        }
+        @Override
+        public View getDropDownView(int position, View convertView,
+                                    ViewGroup parent) {
+            View view = super.getDropDownView(position, convertView, parent);
+            if (position == 0) {
+                TextView tv = (TextView) view;
+                tv.setTextColor(Color.LTGRAY);
+                tv.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
+            }
+            return view;
+        }
     }
 
     @Override
@@ -1226,7 +2373,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         Log.i(TAG, "onCreate(Bundle savedInstanceState [" + savedInstanceState + "]);");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guard_tracker);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -1262,65 +2409,76 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 //        trackSessionSpinnerPosition = preferences.getInt(getString(R.string.saved_guard_tracker_track_session_spinner_position), 0);
 //        cfgSpinnerPosition = preferences.getInt(getString(R.string.saved_guard_tracker_cfg_spinner_position), 0);
 
-        mIdNameView = (TextView) findViewById(R.id.identification_nickname_value);
-        mIdNameImgButton = (ImageButton) findViewById(R.id.identification_nickname_edit_button);
-        mIdBleAddrView = (TextView) findViewById(R.id.identification_ble_value);
-        mIdGsmAddrView = (TextView) findViewById(R.id.identification_gsm_value);
-        mIdGsmAddrImgButton = (ImageButton) findViewById(R.id.identification_gsm_edit_button);
-        mLastMonInfoDatetimeView = (TextView) findViewById(R.id.last_mon_info_datetime);
-        mLastMonInfoTimeView = (TextView) findViewById(R.id.last_mon_info_time);
-        mLastMonInfoLatView = (TextView) findViewById(R.id.last_mon_info_lat);
-        mLastMonInfoLngView = (TextView) findViewById(R.id.last_mon_info_lng);
-        mLastMonInfoAltView = (TextView) findViewById(R.id.last_mon_info_alt);
-        mLastMonInfoSatView = (TextView) findViewById(R.id.last_mon_info_sat);
-        mLastMonInfoHdopView = (TextView) findViewById(R.id.last_mon_info_hdop);
-        mLastMonInfoFixedView = (TextView) findViewById(R.id.last_mon_info_fixed);
-        mLastMonInfoTempView = (TextView) findViewById(R.id.last_mon_info_temp);
-        mLastMonInfoSimView = (TextView) findViewById(R.id.last_mon_info_sim);
-        mLastMonInfoBatView = (TextView) findViewById(R.id.last_mon_info_bat);
-        mLastMonInfoGoogleMapsButton = (Button) findViewById(R.id.last_mon_info_google_maps_button);
-        mPosRefDatetimeView = (TextView) findViewById(R.id.pos_ref_datetime);
-        mPosRefLatView = (TextView) findViewById(R.id.pos_ref_lat);
-        mPosRefLngView = (TextView) findViewById(R.id.pos_ref_lng);
-        mPosRefAltView = (TextView) findViewById(R.id.pos_ref_alt);
-        mPosRefSatView = (TextView) findViewById(R.id.pos_ref_sat);
-        mPosRefHdopView = (TextView) findViewById(R.id.pos_ref_hdop);
-        mPosRefFixedView = (TextView) findViewById(R.id.pos_ref_fixed);
-        mPosRefRefreshButton = (Button) findViewById(R.id.pos_ref_refresh_button);
-        mPosRefNewRefButton = (Button) findViewById(R.id.pos_ref_set_new_button);
-        mPosRefCancelNewRefButton = (Button) findViewById(R.id.pos_ref_cancel_button);
-        mPosRefPendingButton = (Button) findViewById(R.id.pos_ref_pending_button);
-        mPosRefGoogleMapsButton = (Button) findViewById(R.id.pos_ref_google_maps_button);
-        mSensorsBleStatusView = (TextView) findViewById(R.id.sensors_ble_status);
-        mSensorsProgBleView = (TextView) findViewById(R.id.sensors_program_ble);
-        mSensorsProgRtcView = (TextView) findViewById(R.id.sensors_program_rtc);
-        mSensorsProgAccView = (TextView) findViewById(R.id.sensors_program_acc);
-        mWakeSensorsCfgButton = (Button) findViewById(R.id.sensors_ble_program_button);
-        mWakeSensorsRefreshButton = (Button) findViewById(R.id.sensors_ble_refresh_button);
-        mMonCfgDatetimeView = (TextView) findViewById(R.id.mon_cfg_next_wake_datetime);
-        mMonCfgDetailsButton = (Button) findViewById(R.id.mon_cfg_details);
-        mTrackCfgDetailsButton = (Button) findViewById(R.id.track_cfg_details);
-        mVigilanceCfgDetailsButton = (Button) findViewById(R.id.vigilance_cfg_details);
-        mMonInfoSizeEntriesView = (TextView) findViewById(R.id.mon_info_size_entries_view);
-        mMonInfoTempButton = (Button) findViewById(R.id.mon_info_temp_button);
-        mMonInfoPosButton = (Button) findViewById(R.id.mon_info_pos_button);
-        mMonInfoSimButton = (Button) findViewById(R.id.mon_info_sim_button);
-        mMonInfoBatButton = (Button) findViewById(R.id.mon_info_bat_button);
-        mTrackSessionSizeEntriesView = (TextView) findViewById(R.id.track_session_size_entries_view);
-        mTrackSessionAllButton = (Button) findViewById(R.id.track_session_all_button);
-        mTrackSessionLastButton = (Button) findViewById(R.id.track_session_last_button);
-        mTrackSessionSelectButton = (Button) findViewById(R.id.track_session_select_button);
+        mIdNameView =               findViewById(R.id.identification_nickname_value);
+        mIdNameImgButton =          findViewById(R.id.identification_nickname_edit_button);
+        mIdBleAddrView =            findViewById(R.id.identification_ble_value);
+        mIdGsmAddrView =            findViewById(R.id.identification_gsm_value);
+        mIdGsmAddrImgButton =       findViewById(R.id.identification_gsm_edit_button);
+        mLastMonInfoDatetimeView =  findViewById(R.id.last_mon_info_datetime);
+        mLastMonInfoTimeView =      findViewById(R.id.last_mon_info_time);
+        mLastMonInfoLatView =       findViewById(R.id.last_mon_info_lat);
+        mLastMonInfoLngView =       findViewById(R.id.last_mon_info_lng);
+        mLastMonInfoAltView =       findViewById(R.id.last_mon_info_alt);
+        mLastMonInfoSatView =       findViewById(R.id.last_mon_info_sat);
+        mLastMonInfoHdopView =      findViewById(R.id.last_mon_info_hdop);
+        mLastMonInfoFixedView =     findViewById(R.id.last_mon_info_fixed);
+        mLastMonInfoTempView =      findViewById(R.id.last_mon_info_temp);
+        mLastMonInfoSimView =       findViewById(R.id.last_mon_info_sim);
+        mLastMonInfoBatView =       findViewById(R.id.last_mon_info_bat);
+        mLastMonInfoGoogleMapsButton = findViewById(R.id.last_mon_info_google_maps_button);
+        mPosRefDatetimeView =       findViewById(R.id.pos_ref_datetime);
+        mPosRefLatView =            findViewById(R.id.pos_ref_lat);
+        mPosRefLngView =            findViewById(R.id.pos_ref_lng);
+        mPosRefAltView =            findViewById(R.id.pos_ref_alt);
+        mPosRefSatView =            findViewById(R.id.pos_ref_sat);
+        mPosRefHdopView =           findViewById(R.id.pos_ref_hdop);
+        mPosRefFixedView =          findViewById(R.id.pos_ref_fixed);
+        mPosRefRefreshButton =      findViewById(R.id.pos_ref_refresh_button);
+        mPosRefNewRefButton =       findViewById(R.id.pos_ref_set_new_button);
+        mPosRefCancelNewRefButton = findViewById(R.id.pos_ref_cancel_button);
+        mPosRefPendingButton =      findViewById(R.id.pos_ref_pending_button);
+        mPosRefGoogleMapsButton =   findViewById(R.id.pos_ref_google_maps_button);
+        mBleStatusValueView =       findViewById(R.id.ble_status_value);
+        mBleStatusCommandsView =    findViewById(R.id.ble_status_commands_editText);
+        mBleStatusCommandsButton =  findViewById(R.id.ble_status_commands_button);
+        mSensorsConfigBleView =     findViewById(R.id.sensors_ble_state_label);
+        mSensorsConfigRtcView =     findViewById(R.id.sensors_rtc_state_label);
+        mSensorsConfigAccView =     findViewById(R.id.sensors_acc_state_label);
+        mSensorsSyncedStateView =   findViewById(R.id.sensors_synced_state_view);
+        mSensorsConfigSpinner =     findViewById(R.id.sensors_config_spinner);
+        mSensorsSyncSpinner =       findViewById(R.id.sensors_sync_spinner);
+        mMonCfgDatetimeView =       findViewById(R.id.mon_cfg_next_wakeup_view);
+        mMonCfgSyncedStateView =    findViewById(R.id.mon_cfg_synced_state_view);
+        mMonCfgConfigSpinner =      findViewById(R.id.mon_cfg_config_spinner);
+        mMonCfgSyncSpinner =        findViewById(R.id.mon_cfg_sync_spinner);
+        mTrackCfgSyncedStateView =  findViewById(R.id.track_cfg_synced_state_view);
+        mTrackCfgConfigSpinner =    findViewById(R.id.track_cfg_config_spinner);
+        mTrackCfgSyncSpinner =      findViewById(R.id.track_cfg_sync_spinner);
+        mVigCfgSyncedStateView =    findViewById(R.id.vig_cfg_synced_state_view);
+        mVigCfgConfigSpinner =      findViewById(R.id.vig_cfg_config_spinner);
+        mVigCfgSyncSpinner =        findViewById(R.id.vig_cfg_sync_spinner);
+//        mTrackCfgDetailsButton =    findViewById(R.id.track_cfg_details);
+//        mVigilanceCfgDetailsButton = findViewById(R.id.vigilance_cfg_details);
+        mMonInfoSizeEntriesView =   findViewById(R.id.mon_info_size_entries_view);
+        mMonInfoTempButton =        findViewById(R.id.mon_info_temp_button);
+        mMonInfoPosButton =         findViewById(R.id.mon_info_pos_button);
+        mMonInfoSimButton =         findViewById(R.id.mon_info_sim_button);
+        mMonInfoBatButton =         findViewById(R.id.mon_info_bat_button);
+        mTrackSessionSizeEntriesView = findViewById(R.id.track_session_size_entries_view);
+        mTrackSessionAllButton =    findViewById(R.id.track_session_all_button);
+        mTrackSessionLastButton =   findViewById(R.id.track_session_last_button);
+        mTrackSessionSelectButton = findViewById(R.id.track_session_select_button);
 //        mNicknameEditButton        = (ImageButton)findViewById(R.id.nickname_edit_button);
 //        mNicknameDoneButton        = (ImageButton)findViewById(R.id.nickname_done_button);
 //        mNicknameCancelButton      = (ImageButton)findViewById(R.id.nickname_cancel_button);
-        mContactsOwnerView = (TextView) findViewById(R.id.owner_value);
-        mContactsOwnerRefreshButton = (Button) findViewById(R.id.owner_refresh_button);
-        mContactsOwnerRstButton = (Button) findViewById(R.id.owner_rst_button);
-        mContactsSecondaryViewGroup = (ViewGroup) findViewById(R.id.contacts_container);
-        mContactsSecondaryEmptyView = (TextView) findViewById(R.id.empty_contacts);
-        mContactsSecondaryAddButton = (Button) findViewById(R.id.secondary_contacts_add_button);
-        mContactsSecondaryRefreshButton = (Button) findViewById(R.id.secondary_contacts_refresh_button);
-        mContactsSecondaryDelButton = (Button) findViewById(R.id.secondary_contacts_delete_button);
+        mContactsOwnerView =        findViewById(R.id.owner_value);
+        mContactsOwnerRefreshButton = findViewById(R.id.owner_refresh_button);
+        mContactsOwnerRstButton =   findViewById(R.id.owner_rst_button);
+        mContactsSecondaryViewGroup = findViewById(R.id.contacts_container);
+        mContactsSecondaryEmptyView = findViewById(R.id.empty_contacts);
+        mContactsSecondaryAddButton = findViewById(R.id.secondary_contacts_add_button);
+        mContactsSecondaryRefreshButton = findViewById(R.id.secondary_contacts_refresh_button);
+        mContactsSecondaryDelButton = findViewById(R.id.secondary_contacts_delete_button);
 
 //        mIdNameView.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
@@ -1374,39 +2532,182 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
             }
         });
 
-        mMonCfgDetailsButton.setOnClickListener(new View.OnClickListener() {
+        ArrayAdapter<String> adapterConfigSpinner;
+        ArrayAdapter<String> adapterSyncSpinner;
+        List<String> config;
+        String [] sync;
+
+        // Get String array from resources
+        config = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.config_spinner_array)));
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapterConfigSpinner = new MySpinnerAdapter<>(this,
+                android.R.layout.simple_spinner_item, config);
+        // Specify the layout to use when the list of choices appears
+        adapterConfigSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mMonCfgConfigSpinner.setAdapter(adapterConfigSpinner);
+        mMonCfgConfigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), MonitoringCfgActivity.class);
-                int monCfgId = mGuardTracker.getMonCfgId();
-                int guardTrackerId = mGuardTracker.get_id();
-                intent.putExtra(GuardTrackerActivity.CONFIG_ID, monCfgId);
-                intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mMonCfgConfigSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        startMonCfgEditDialog();
+                        break;
+                    case 2:
+                        startMonCfgRestoreDialog();
+                        break;
+                    case 3:
+                        startMonCfgViewSyncedDialog();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        // Get String array from resources
+        sync = getResources().getStringArray(R.array.sync_spinner_array);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapterSyncSpinner = new MySpinnerAdapter<>(this,
+                android.R.layout.simple_spinner_item, sync);
+        // Specify the layout to use when the list of choices appears
+        adapterSyncSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mMonCfgSyncSpinner.setAdapter(adapterSyncSpinner);
+        mMonCfgSyncSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mMonCfgSyncSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        Log.i(TAG, "sensorsSyncButton.onClick");
+                        startMonCfgSyncDialog();
+                        break;
+                    case 2:
+                        Log.i(TAG, "sensorsRefreshButton.onClick");
+                        startMonCfgRefreshDialog();
+                        break;
+                    default:
+                        Log.i(TAG, "Sync spinner default item selected");
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // Tracking configuration
+        // Apply the adapter to the spinner
+        mTrackCfgConfigSpinner.setAdapter(adapterConfigSpinner);
+        mTrackCfgConfigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mTrackCfgConfigSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        startTrackCfgEditDialog();
+                        break;
+                    case 2:
+                        startTrackCfgRestoreDialog();
+                        break;
+                    case 3:
+                        startTrackCfgViewSyncedDialog();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        // Apply the adapter to the spinner
+        mTrackCfgSyncSpinner.setAdapter(adapterSyncSpinner);
+        mTrackCfgSyncSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mTrackCfgSyncSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        Log.i(TAG, "trackSyncButton.onClick");
+                        startTrackCfgSyncDialog();
+                        break;
+                    case 2:
+                        Log.i(TAG, "trackRefreshButton.onClick");
+                        startTrackCfgRefreshDialog();
+                        break;
+                    default:
+                        Log.i(TAG, "Sync spinner default item selected");
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
         // Tracking configuration
-        mTrackCfgDetailsButton.setOnClickListener(new View.OnClickListener() {
+        // Apply the adapter to the spinner
+        mVigCfgConfigSpinner.setAdapter(adapterConfigSpinner);
+        mVigCfgConfigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), TrackingCfgActivity.class);
-                int trackCfgId = mGuardTracker.getTrackCfgId();
-                int guardTrackerId = mGuardTracker.get_id();
-                intent.putExtra(GuardTrackerActivity.CONFIG_ID, trackCfgId);
-                intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mVigCfgConfigSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        startVigCfgEditDialog();
+                        break;
+                    case 2:
+                        startVigCfgRestoreDialog();
+                        break;
+                    case 3:
+                        startVigCfgViewSyncedDialog();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
-        // Vigilance configuration
-        mVigilanceCfgDetailsButton.setOnClickListener(new View.OnClickListener() {
+        // Apply the adapter to the spinner
+        mVigCfgSyncSpinner.setAdapter(adapterSyncSpinner);
+        mVigCfgSyncSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), VigilanceCfgActivity.class);
-                int vigilanceCfgId = mGuardTracker.getVigCfgId();
-                int guardTrackerId = mGuardTracker.get_id();
-                intent.putExtra(GuardTrackerActivity.CONFIG_ID, vigilanceCfgId);
-                intent.putExtra(GuardTrackerActivity.GUARD_TRACKER_ID, guardTrackerId);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mVigCfgSyncSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        Log.i(TAG, "vigSyncButton.onClick");
+                        startVigCfgSyncDialog();
+                        break;
+                    case 2:
+                        Log.i(TAG, "vigRefreshButton.onClick");
+                        startVigCfgRefreshDialog();
+                        break;
+                    default:
+                        Log.i(TAG, "Sync spinner default item selected");
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
         // History
@@ -1578,20 +2879,71 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
                     onClickPosRefCancelNewReferencePos();
             }
         });
-        mWakeSensorsRefreshButton.setOnClickListener(new View.OnClickListener() {
+
+        // Get String array from resources
+        config = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.config_spinner_array)));
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapterConfigSpinner = new MySpinnerAdapter<>(this,
+                android.R.layout.simple_spinner_item, config);
+        // Specify the layout to use when the list of choices appears
+        adapterConfigSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSensorsConfigSpinner.setAdapter(adapterConfigSpinner);
+        mSensorsConfigSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Log.i(TAG, "sensorsProgramButton.onClick");
-                if (isBleConnectionValid())
-                    onClickWakeSensorsRefresh();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSensorsConfigSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        startWakeSensorsEditDialog();
+                        break;
+                    case 2:
+                        startWakeSensorsRestoreDialog();
+                        break;
+                    case 3:
+                        startWakeSensorsViewSyncedDialog();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
-        mWakeSensorsCfgButton.setOnClickListener(new View.OnClickListener() {
+        // Get String array from resources
+        sync = getResources().getStringArray(R.array.sync_spinner_array);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        adapterSyncSpinner = new MySpinnerAdapter<>(this,
+                android.R.layout.simple_spinner_item, sync);
+        // Specify the layout to use when the list of choices appears
+        adapterSyncSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSensorsSyncSpinner.setAdapter(adapterSyncSpinner);
+        mSensorsSyncSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Log.i(TAG, "sensorsProgramButton.onClick");
-                if (isBleConnectionValid())
-                    startWakeSensorsConfigDialog();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSensorsSyncSpinner.setSelection(0);
+                switch(position) {
+                    case 1:
+                        Log.i(TAG, "sensorsSyncButton.onClick");
+                        startWakeSensorsSyncDialog();
+                        break;
+                    case 2:
+                        Log.i(TAG, "sensorsRefreshButton.onClick");
+                        startWakeSensorsRefreshDialog();
+                        break;
+                    default:
+                        Log.i(TAG, "Sync spinner default item selected");
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 //        mNicknameEditButton.setOnClickListener(new View.OnClickListener() {
@@ -1673,6 +3025,21 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         });
 
         mBleState = BleStateEnum.Disconnected;
+
+
+        mBleStatusCommandsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBleStatusCommandsButton.getText().equals(getText(R.string.ble_status_view_messages_button_label))) {
+                    mBleStatusCommandsView.setVisibility(View.VISIBLE);
+                    mBleStatusCommandsButton.setText(R.string.ble_status_hide_messages_button_label);
+                } else {
+                    mBleStatusCommandsView.setVisibility(View.GONE);
+                    mBleStatusCommandsButton.setText(R.string.ble_status_view_messages_button_label);
+                }
+
+            }
+        });
         mHandler = new Handler();
 
         // Deve ser feito aqui e não no onStart porque poderemos estar a meio de uma edição do nickname
@@ -1805,7 +3172,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
     }
 
     /**
-     * Remove next method when it is tested in GTDeviceControlActivity.
+     * Remove next method when it is tested in BleControlActivity. Needs to be revisited.
      *
      * @param requestCode
      * @param resultCode
@@ -1824,11 +3191,44 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
             return;
         }
         if (requestCode == REQUEST_ENABLE_BT) {
-            if (resultCode == Activity.RESULT_CANCELED)
+            if (resultCode == Activity.RESULT_OK)
+                startBleScan();
+            else
                 Toast.makeText(getBaseContext(), "No bluetooth connection can be made without bluetooth enabled", Toast.LENGTH_LONG);
-            else if (resultCode == Activity.RESULT_OK) {
-                startBleScan(); // Já altera o estado de mBleSate e invalida o menu
-            }
+            return;
+        }
+        if (requestCode == REQUEST_MON_CFG) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Create GuardTracker backup if returned id is different of current monCfgId.
+                int new_id = data.getIntExtra(RESULT_MON_CFG, 0);
+                if (new_id != mGuardTracker.getMonCfgId())
+                    onClickMonCfgEdit(new_id);
+            } else
+                Toast.makeText(getBaseContext(), "Monitoring Configuration Activity return error", Toast.LENGTH_LONG);
+
+            return;
+        }
+        if (requestCode == REQUEST_TRACK_CFG) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Create GuardTracker backup if returned id is different of current trackCfgId.
+                int new_id = data.getIntExtra(RESULT_TRACK_CFG, 0);
+                if (new_id != mGuardTracker.getTrackCfgId())
+                    onClickTrackCfgEdit(new_id);
+            } else
+                Toast.makeText(getBaseContext(), "Tracking Configuration Activity return error", Toast.LENGTH_LONG);
+
+            return;
+        }
+        if (requestCode == REQUEST_VIG_CFG) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Create GuardTracker backup if returned id is different of current vigCfgId.
+                int new_id = data.getIntExtra(RESULT_VIG_CFG, 0);
+                if (new_id != mGuardTracker.getVigCfgId())
+                    onClickVigCfgEdit(new_id);
+            } else
+                Toast.makeText(getBaseContext(), "Vigilance Configuration Activity return error", Toast.LENGTH_LONG);
+
+            return;
         }
     }
 
@@ -1859,8 +3259,14 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         }
         mMonInfoList = MonitoringInfo.readList(getBaseContext(), mGuardTracker.get_id());
         mTrackSessionList = TrackSession.readList(getBaseContext(), mGuardTracker.get_id());
-        mMonCfg = MonitoringConfiguration.read(getBaseContext(), mGuardTracker.getMonCfgId());
-        mGuardTracker.setMonCfg(mMonCfg);
+        MonitoringConfiguration monCfg = MonitoringConfiguration.read(getBaseContext(), mGuardTracker.getMonCfgId());
+        mGuardTracker.setMonCfg(monCfg);
+        // Tracking and Vigilance configuration needs to be initiated already because on updateView
+        // this objects are used to be compared
+        TrackingConfiguration trackCfg = TrackingConfiguration.read(getBaseContext(), mGuardTracker.getTrackCfgId());
+        mGuardTracker.setTrackCfg(trackCfg);
+        VigilanceConfiguration vigCfg = VigilanceConfiguration.read(getBaseContext(), mGuardTracker.getVigCfgId());
+        mGuardTracker.setVigilanceCfg(vigCfg);
         mContactsSecondaryList = SecondaryContactsDbHelper.read(getBaseContext(), mGuardTracker.get_id());
         mGuardTracker.setSecondaryContacts(mContactsSecondaryList);
 
@@ -1873,44 +3279,18 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
 
 
         // Configurations
-        // Monitoring configuration
-        String date;
-        int periodMin = mMonCfg.getPeriodMin();
-        int modMonCfg = mMonCfg.getTimeMod();
-        MonitoringInfo tmpLastMonInfo = mGuardTracker.getLastMonInfo();
-        if (tmpLastMonInfo != null) {
-            long dateInMillis = tmpLastMonInfo.getDate().getTime();
-            dateInMillis += (periodMin * 60 * 1000);
-            date = String.format("%1$td/%1$tm/%1$tY %1$tR", dateInMillis); // 1$ = index og argument
-        } else {
-            Calendar now = Calendar.getInstance();
-            if (periodMin >= 24 * 60) {
-                int nowHour = now.get(Calendar.HOUR_OF_DAY);
-                int nowMinute = now.get(Calendar.MINUTE);
-                long nowInMillis = now.getTimeInMillis();
-                now.set(Calendar.HOUR_OF_DAY, modMonCfg / 60); // Adjust to alarm time (hours)
-                now.set(Calendar.MINUTE, modMonCfg % 60);      // Adjust to alarm time (minutes)
-                long dateInMillis = now.getTimeInMillis();
-                if (nowInMillis > dateInMillis) {
-                    dateInMillis += 24 * 60 * 60 * 1000; // Add 1 day to wake alert time
-                }
-                date = String.format("%1$td/%1$tm/%1$tY %1$tR", dateInMillis); // 1$ = index og argument
-            } else {
-                int nextHour = periodMin / 60;
-                int nextMinute = periodMin % 60;
-                date = nextHour == 0 ?
-                        String.format(getString(R.string.mon_cfg_next_wake_in_minutes), nextMinute) :
-                        String.format(getString(R.string.mon_cfg_next_wake_in_hours_minutes), nextHour, nextMinute);
-            }
-        }
-        mMonCfgDatetimeView.setText(date);
-
+        updateMonCfgView();
+        updateTrackCfgView();
+        updateVigCfgView();
         // Current status
+        // Ble status
+        updateBleStatusView();
         // Last monitoring information
         updateLastMonInfoView();
         // Reference position
         updateReferencePositionView();
         // Wake sensors
+        // Turn the buttons disabled in config spinner if there is no wakeup sensors backup.
         updateWakeSensorsView();
 
         // Monitoring information
@@ -2088,9 +3468,68 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), R.string.dialog_wake_sensors_message_unsuccessful_write, Toast.LENGTH_LONG).show();
                 e.printStackTrace();
-            } finally {
-                dialog.dismiss();
             }
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.WakeSensorsRestore.toString().equals(dialogTag)) {
+            onClickWakeSensorsRestore();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.WakeSensorsRefresh.toString().equals(dialogTag)) {
+            onClickWakeSensorsRefresh();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.WakeSensorsSync.toString().equals(dialogTag)) {
+            onClickWakeSensorsSync();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.MonCfgRestore.toString().equals(dialogTag)) {
+            onClickMonCfgRestore();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.MonCfgRefresh.toString().equals(dialogTag)) {
+            onClickMonCfgRefresh();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.MonCfgSync.toString().equals(dialogTag)) {
+            onClickMonCfgSync();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.TrackCfgRestore.toString().equals(dialogTag)) {
+            onClickTrackCfgRestore();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.TrackCfgRefresh.toString().equals(dialogTag)) {
+            onClickTrackCfgRefresh();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.TrackCfgSync.toString().equals(dialogTag)) {
+            onClickTrackCfgSync();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.VigCfgRestore.toString().equals(dialogTag)) {
+            onClickVigCfgRestore();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.VigCfgRefresh.toString().equals(dialogTag)) {
+            onClickVigCfgRefresh();
+            dialog.dismiss();
+            return;
+        }
+        if (DialogFragmentTags.VigCfgSync.toString().equals(dialogTag)) {
+            onClickVigCfgSync();
+            dialog.dismiss();
             return;
         }
         if (DialogFragmentTags.FactoryDefaultsReset.toString().equals(dialogTag)) {
@@ -2106,20 +3545,20 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
         if (DialogFragmentTags.DevicePhoneNumber.toString().equals(dialogTag)) {
             PhonePickerDialogFragment dialogFragment = (PhonePickerDialogFragment) dialog;
             String devicePhoneNumber = dialogFragment.getPhoneNumber();
-            dialog.dismiss();
             mTempGuardTracker.setGsmId(devicePhoneNumber);
             mSyncConfigWorkflow.workflowContinue();
+            dialog.dismiss();
             return;
         }
         if (DialogFragmentTags.SelfDeviceEliminate.toString().equals(dialogTag)/*dialog instanceof DialogGenericIcTtMs2Bt*/) {
             int id = mGuardTrackerId;
-            boolean deviceEliminated = GuardTracker.delete(getBaseContext(), id);
+            boolean deviceEliminated = GuardTracker.deleteDeep(getBaseContext(), id);
             Toast.makeText(getBaseContext(), deviceEliminated ?
-                            R.string.dialog_eliminate_devices_message_success :
+                            R.string.dialog_eliminate_devices_message_successful :
                             R.string.dialog_eliminate_devices_message_unsuccessful,
                     Toast.LENGTH_LONG).show();
+            dialog.dismiss();
             finish();
-            return;
         }
         if (DialogFragmentTags.SecondaryContactAdd.toString().equals(dialogTag)) {
             PhonePickerDialogFragment phonePickerDialogFragment = (PhonePickerDialogFragment) dialog;
@@ -2149,7 +3588,7 @@ public class GuardTrackerActivity extends AppCompatActivity implements BleConnec
             dialog.dismiss();
             return;
         }
-        if (DialogFragmentTags.ChangeDeviceNickname.toString().equals(dialogTag)) {
+        else if (DialogFragmentTags.ChangeDeviceNickname.toString().equals(dialogTag)) {
             NicknamePickerDialogFragment nicknamePickerDialogFragment = (NicknamePickerDialogFragment) dialog;
             String nickname = nicknamePickerDialogFragment.getText();
             onClickChangeDeviceNickname(nickname);

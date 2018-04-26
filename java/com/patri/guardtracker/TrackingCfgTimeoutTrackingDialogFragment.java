@@ -11,8 +11,8 @@ import android.widget.TimePicker;
 /**
  * Created by patri on 20/11/2016.
  */
-public class MonitoringCfgTimeToWakeDialogFragment extends DialogGenericIcTtMs2Bt {
-    public final static String TAG = MonitoringCfgTimeToWakeDialogFragment.class.getSimpleName();
+public class TrackingCfgTimeoutTrackingDialogFragment extends DialogGenericIcTtMs2Bt {
+    public final static String TAG = TrackingCfgTimeoutTrackingDialogFragment.class.getSimpleName();
 
     protected ViewGroup mViewContainer;
     private TimePicker mTimeToWakeTimePicker;

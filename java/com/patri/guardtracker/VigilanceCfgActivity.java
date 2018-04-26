@@ -1,8 +1,11 @@
 package com.patri.guardtracker;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,28 +14,54 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.patri.guardtracker.model.GuardTracker;
 import com.patri.guardtracker.model.VigilanceConfiguration;
 
-public class VigilanceCfgActivity extends AppCompatActivity {
+public class VigilanceCfgActivity extends AppCompatActivity implements DialogListener {
     private static final String TAG = VigilanceConfiguration.class.getSimpleName();
+//    public final static String MON_CFG_CURRENT_TIME_TO_WAKE_IN_MINUTES_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_TIME_TO_WAKE_IN_MINUTES";
+//    public final static String MON_CFG_CURRENT_WAKEUP_PERIOD_IN_MINUTES_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_WAKEUP_PERIOD_IN_MINUTES_ARG";
+//    public final static String MON_CFG_CURRENT_SMS_CRITERIA_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_SMS_CRITERIA_ARG";
+//    public final static String MON_CFG_CURRENT_SMS_CRITERIA_CYCLIC_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_SMS_CRITERIA_CYCLIC_ARG";
+//    public final static String MON_CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_GPS_THRESHOLD_IN_METERS_ARG";
+//    public final static String MON_CFG_CURRENT_GPS_FOV_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_GPS_FOV_ARG";
+//    public final static String MON_CFG_CURRENT_GPS_TIMEOUT_IN_MINUTES_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_GPS_TIMEOUT_IN_MINUTES_ARG";
+//    public final static String MON_CFG_CURRENT_TEMP_BOUNDS_LOW_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_TEMP_BOUNDS_LOW_ARG";
+//    public final static String MON_CFG_CURRENT_TEMP_BOUNDS_HIGH_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_TEMP_BOUNDS_HIGH_ARG";
+//    public final static String MON_CFG_CURRENT_SIM_BALANCE_ARG = "com.patri.guardtracker.MonitoringCfgActivity.MON_CFG_CURRENT_SIM_BLANCE_ARG";
+
+    /**
+     * This enumerate is used to establish the Tag to be passed to dialog. The same dialog type is several situations.
+     */
+    private enum VigilanceCfgDialogs {
+        TiltSensitivityDialog, BleAdvertPeriodDialog, VigCfgCancelDialog;
+        private String[] valuesStr = { "0", "1", "2" };
+        public String toString() {
+            String dialogStr = valuesStr[this.ordinal()];
+            return dialogStr;
+        }
+    }
 
     private VigilanceConfiguration mVigilanceCfg;
+    private VigilanceConfiguration mVigilanceCfgBackup;
     private int mVigilanceCfgId;
-    private int mGuardTrackerId;
-    private String mGuardTrackerName;
+    private Button mDoneButton;
+    private Button mCancelButton;
+
+    ArrayAdapter mArrayAdapter;
+    String [][] mElems;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_vigilance_cfg);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -42,11 +71,13 @@ public class VigilanceCfgActivity extends AppCompatActivity {
                 Toolbar.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         progressBar.setIndeterminate(true);
 
-        final ListView listView = (ListView)findViewById(R.id.vig_cfg_list_view);
+        mDoneButton = findViewById(R.id.vig_cfg_done_button);
+        mCancelButton = findViewById(R.id.vig_cfg_cancel_button);
+        final ListView listView = findViewById(R.id.vig_cfg_list_view);
         listView.setEmptyView(progressBar);
 
         // Must add the progress bar to the root of the layout
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup root = findViewById(android.R.id.content);
         root.addView(progressBar);
 
 
@@ -61,59 +92,192 @@ public class VigilanceCfgActivity extends AppCompatActivity {
 
         Log.i(TAG, "onCreate(Bundle savedInstanceState [" + savedInstanceState + "])");
 
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+//        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
         Intent intent = getIntent();
-        mGuardTrackerId = intent.getIntExtra(GuardTrackerActivity.GUARD_TRACKER_ID, 0);
+//        mGuardTrackerId = intent.getIntExtra(GuardTrackerActivity.GUARD_TRACKER_ID, 0);
         mVigilanceCfgId = intent.getIntExtra(GuardTrackerActivity.CONFIG_ID, 0);
-        if (mGuardTrackerId == 0 || mVigilanceCfgId == 0) {
-            mGuardTrackerId = preferences.getInt(getString(R.string.saved_guard_tracker_id), 0);
-            mVigilanceCfgId = preferences.getInt(getString(R.string.saved_guard_tracker_tracking_cfg_id), 0);
-        }
-        if (mGuardTrackerId == 0 || mVigilanceCfgId == 0) {
-            // Return to last activity
-            // ToDo
-        }
+        String guardTrackerName = intent.getStringExtra(GuardTrackerActivity.GUARD_TRACKER_NAME);
+//        if (mGuardTrackerId == 0 || mVigilanceCfgId == 0) {
+//            mGuardTrackerId = preferences.getInt(getString(R.string.saved_guard_tracker_id), 0);
+//            mVigilanceCfgId = preferences.getInt(getString(R.string.saved_guard_tracker_tracking_cfg_id), 0);
+//        }
+//        if (mGuardTrackerId == 0 || mVigilanceCfgId == 0) {
+//            // Return to last activity
+//            // ToDo
+//        }
 
         mVigilanceCfg = VigilanceConfiguration.read(getBaseContext(), mVigilanceCfgId);
+        mVigilanceCfgBackup = new VigilanceConfiguration(
+                mVigilanceCfg.getTiltLevel(),
+                mVigilanceCfg.getBleAdvertisePeriod()
+        );
 
-        final String [][] elems = {
+        mElems = new String [][] {
                 { getString(R.string.vig_cfg_item_title_tilt_sensitivity), mVigilanceCfg.getPrettyTiltSensitivity() },
                 { getString(R.string.vig_cfg_item_title_ble_advertise_period), mVigilanceCfg.getPrettyBleAdvertisePeriod() }
         };
 
         // A simple ArrayAdapter can only be represented by a TextView
-        ArrayAdapter adapter = new ArrayAdapter(getBaseContext(), android.R.layout.simple_list_item_2, android.R.id.text1, elems) {
+        mArrayAdapter = new ArrayAdapter(getBaseContext(), android.R.layout.simple_list_item_2, android.R.id.text1, mElems) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
                 TextView text1 = (TextView) view.findViewById(android.R.id.text1);
                 TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-                text1.setText(elems[position][0]);
-                text2.setText(elems[position][1]);
+                text1.setText(mElems[position][0]);
+                text2.setText(mElems[position][1]);
                 return view;
             }
         };
 
-        listView.setAdapter(adapter);
+        listView.setAdapter(mArrayAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(TAG, "listView.onItemSelected: position = " + position + " id = " + id);
                 listView.setItemChecked(position, true);
-                // ToDo:
-
+                // Start views for configure individual elements
+                // Start views for configure individual elements
+                switch(position) {
+                    case 0:
+                        startTiltSensitivityDialog();
+                        break;
+                    case 1:
+                        startBleAdvertPeriodDialog();
+                        break;
+                    case 2:
+                    default:;
+                }
             }
         });
 
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mVigilanceCfg.equals(mVigilanceCfgBackup) == false)
+                    startCancelConfigDialog();
+                else
+                    onClickCancelConfig();
+            }
+        });
 
-        GuardTracker guardTracker = GuardTracker.read(getBaseContext(), mGuardTrackerId);
-        mGuardTrackerName = guardTracker.getName();
-        setTitle(getString(R.string.title_activity_vigilance_cfg) + ": " + mGuardTrackerName);
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickDoneConfig();
+            }
+        });
+
+        setTitle(getString(R.string.title_activity_vigilance_cfg) + ": " + guardTrackerName);
+        mHandler = new Handler();
     }
 
+    private void updateVigCfgView() {
+        mElems[0][1] = mVigilanceCfg.getPrettyTiltSensitivity();
+        mElems[1][1] = mVigilanceCfg.getPrettyBleAdvertisePeriod();
+
+//        ListAdapter listAdapter = mArrayAdapter;
+//        String [] listItem = (String[])listAdapter.getItem(position);
+//        listItem[1] = mMonCfg.getPrettyStartTime();
+        mArrayAdapter.notifyDataSetChanged();
+    }
+
+    private void onClickTitltSensitivityConfig(int sensitivity) {
+        mVigilanceCfg.setTiltLevel(sensitivity);
+        updateVigCfgView();
+    }
+    private void onClickBleAdvertPeriodConfig(int bleAdvertPeriodSeconds) {
+        mVigilanceCfg.setBleAdvertisePeriod(bleAdvertPeriodSeconds);
+        updateVigCfgView();
+    }
+
+    private void onClickCancelConfig() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
+    }
+
+    private void onClickDoneConfig() {
+        // May have to create a new entry in Monitoring Configuration table
+        if (mVigilanceCfg.equals(mVigilanceCfgBackup) == false)
+//            if (mToCreateBackup)
+            mVigilanceCfg.create(getBaseContext());
+//            else
+//                mMonCfg.update(getBaseContext());
+        Intent intent = new Intent();
+        intent.putExtra(GuardTrackerActivity.RESULT_MON_CFG, mVigilanceCfg.get_id());
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
+    private void startTiltSensitivityDialog() {
+        DialogGenericIcTtMs2Bt dialogFragment = new CfgPercentPickerDialogFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogGenericIcTtMs2Bt.ICON_ID_KEY, android.R.drawable.ic_menu_edit);
+        bundle.putInt(DialogGenericIcTtMs2Bt.TITLE_ID_KEY, R.string.dialog_vig_cfg_tilt_sensitivity_title);
+        bundle.putInt(DialogGenericIcTtMs2Bt.MESSAGE_ID_KEY, R.string.dialog_vig_cfg_tilt_sensitivity_message_body);
+        bundle.putInt(DialogGenericIcTtMs2Bt.YES_BUTTON_LABEL_ID_KEY, R.string.done_button_label);
+        bundle.putInt(DialogGenericIcTtMs2Bt.NO_BUTTON_LABEL_ID_KEY, R.string.cancel_button_label);
+        bundle.putInt(CfgPercentPickerDialogFragment.CFG_CURRENT_VAL_ARG, mVigilanceCfg.getTiltLevel());
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, VigilanceCfgDialogs.TiltSensitivityDialog.toString());
+    }
+    private void startBleAdvertPeriodDialog() {
+        DialogGenericIcTtMs2Bt dialogFragment = new CfgTimePickerDialogFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogGenericIcTtMs2Bt.ICON_ID_KEY, android.R.drawable.ic_menu_edit);
+        bundle.putInt(DialogGenericIcTtMs2Bt.TITLE_ID_KEY, R.string.dialog_vig_cfg_ble_advert_period_title);
+        bundle.putInt(DialogGenericIcTtMs2Bt.MESSAGE_ID_KEY, R.string.dialog_vig_cfg_ble_advert_period_message_body);
+        bundle.putInt(DialogGenericIcTtMs2Bt.YES_BUTTON_LABEL_ID_KEY, R.string.done_button_label);
+        bundle.putInt(DialogGenericIcTtMs2Bt.NO_BUTTON_LABEL_ID_KEY, R.string.cancel_button_label);
+        bundle.putInt(CfgPercentPickerDialogFragment.CFG_CURRENT_VAL_ARG, mVigilanceCfg.getBleAdvertisePeriod());
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, VigilanceCfgDialogs.BleAdvertPeriodDialog.toString());
+    }
+
+    private void startCancelConfigDialog() {
+        DialogGenericIcTtMs2Bt dialogFragment = new DialogGenericIcTtMs2Bt();
+        FragmentManager manager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogGenericIcTtMs2Bt.ICON_ID_KEY, android.R.drawable.ic_dialog_alert);
+        bundle.putInt(DialogGenericIcTtMs2Bt.TITLE_ID_KEY, R.string.dialog_vig_cfg_cancel_title);
+        bundle.putInt(DialogGenericIcTtMs2Bt.MESSAGE_ID_KEY, R.string.dialog_vig_cfg_cancel_message_body);
+        bundle.putInt(DialogGenericIcTtMs2Bt.YES_BUTTON_LABEL_ID_KEY, android.R.string.yes);
+        bundle.putInt(DialogGenericIcTtMs2Bt.NO_BUTTON_LABEL_ID_KEY, android.R.string.no);
+        dialogFragment.setArguments(bundle);
+        dialogFragment.show(manager, VigilanceCfgActivity.VigilanceCfgDialogs.VigCfgCancelDialog.toString());
+    }
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        dialog.dismiss();
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        String dialogTag = dialog.getTag();
+        if (VigilanceCfgDialogs.TiltSensitivityDialog.toString().equals(dialogTag)) {
+            int newSensitivity = ((CfgPercentPickerDialogFragment)dialog).getNewPercent();
+            onClickTitltSensitivityConfig(newSensitivity);
+            dialog.dismiss();
+            return;
+        }
+        if (VigilanceCfgDialogs.BleAdvertPeriodDialog.toString().equals(dialogTag)) {
+            int bleAdvertPeriod = ((CfgTimePickerDialogFragment)dialog).getNewTime();
+            onClickBleAdvertPeriodConfig(bleAdvertPeriod);
+            dialog.dismiss();
+            return;
+        }
+        if (VigilanceCfgActivity.VigilanceCfgDialogs.VigCfgCancelDialog.toString().equals(dialogTag)) {
+            dialog.dismiss();
+            onClickCancelConfig();
+            return;
+        }
+
+    }
     @Override
     protected void onStart() {
         super.onStart();

@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements DialogListener {
     }
 
     /**
-     * Remove next method when it is tested in GTDeviceControlActivity.
+     * Remove next method when it is tested in BleControlActivity. Needs to be revisited.
      * @param requestCode
      * @param resultCode
      * @param data

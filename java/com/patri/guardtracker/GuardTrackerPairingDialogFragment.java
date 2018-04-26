@@ -99,43 +99,4 @@ public class GuardTrackerPairingDialogFragment extends PhonePickerDialogFragment
         return apply(content, new ForegroundColorSpan(color));
     }
 
-//    /* Attribute fro permissions checeker */
-//    static final String[] PERMISSIONS = new String[]{Manifest.permission.SEND_SMS};
-//    //private PermissionsChecker mChecker;
-//    private static final int REQUEST_CODE = 0;
-
-//    private void startPermissionsActivity() {
-//        PermissionsActivity.startActivityForResult(this.getActivity(), REQUEST_CODE, PERMISSIONS);
-//    }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-
-//        final String[] PERMISSIONS = new String[] {Manifest.permission.SEND_SMS};
-//        PermissionsChecker checker = new PermissionsChecker(getContext());
-//
-//        if (checker.lacksPermissions(PERMISSIONS)) {
-//            startPermissionsActivity();
-//        }
-
-        return dialog;
-    }
-
-//    /**
-//     * Remove next method when it is tested in GTDeviceControlActivity.
-//     * @param requestCode
-//     * @param resultCode
-//     * @param data
-//     */
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == REQUEST_CODE && resultCode == PermissionsActivity.PERMISSIONS_DENIED) {
-//            this.dismiss();
-//        }
-//
-//    }
-
 }

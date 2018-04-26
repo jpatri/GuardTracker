@@ -80,7 +80,7 @@ public class SecondaryContactsDbHelper {
         String[] whereClauseArgsContacts = { String.valueOf(guardTrackerId) };
         // Execute query
         int deletedItems = db.delete(GuardTrackerContract.ContactsTable.TABLE_NAME, whereClauseContacts, whereClauseArgsContacts);
-        Log.i(TAG, "delete: Deleted " + deletedItems + " items");
+        Log.i(TAG, "deleteDeep: Deleted " + deletedItems + " items");
 
         db.close();
         dbHelper.close();
@@ -98,7 +98,7 @@ public class SecondaryContactsDbHelper {
         String[] whereClauseArgsContacts = { String.valueOf(guardTrackerId), phoneNumber };
         // Execute query
         int deletedItems = db.delete(GuardTrackerContract.ContactsTable.TABLE_NAME, whereClauseContacts, whereClauseArgsContacts);
-        Log.i(TAG, "delete: Deleted " + deletedItems + " items");
+        Log.i(TAG, "deleteDeep: Deleted " + deletedItems + " items");
 
         db.close();
         dbHelper.close();

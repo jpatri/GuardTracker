@@ -222,7 +222,7 @@ public class DevicesEliminateActivity extends AppCompatActivity implements Dialo
                 mCursor.moveToPosition(position);
 
                 int id = mCursor.getInt(mCursor.getColumnIndex(GuardTrackerContract.GuardTrackerTable._ID));
-                devicesEliminated += GuardTracker.delete(getBaseContext(), id) ? 1 : 0;
+                devicesEliminated += GuardTracker.deleteDeep(getBaseContext(), id) ? 1 : 0;
 
                 cnt += 1;
                 if (cnt == mItemCheckedCount)
@@ -231,7 +231,7 @@ public class DevicesEliminateActivity extends AppCompatActivity implements Dialo
         }
 
         Toast.makeText(getBaseContext(), devicesEliminated == mItemCheckedCount ?
-                R.string.dialog_eliminate_devices_message_success :
+                R.string.dialog_eliminate_devices_message_successful :
                 R.string.dialog_eliminate_devices_message_unsuccessful,
                 Toast.LENGTH_LONG).show();
 

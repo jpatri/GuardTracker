@@ -178,37 +178,6 @@ public class DeviceScanActivity extends AppCompatActivity/*ListActivity*/ {
     }
 
 
-//    mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            Log.i(TAG, "onItemClick: item checked: position = " + position + "; id = " + id);
-//            mListView.setItemChecked(position, true);
-//            // Get bluetooth device selected
-//            BluetoothDevice device = mLeDeviceListAdapter.getItem(position);
-//            String deviceAddr = device.getAddress();
-//            // Get database id of guardtracker with ble address
-//            int guardTrackerId = GuardTracker.bleAddressToId(GTDeviceScanActivity.this.getBaseContext(), deviceAddr);
-//            Intent intent = new Intent(GTDeviceScanActivity.this.getBaseContext(), GuardTrackerActivity.class);
-//            intent.putExtra(MainActivity.GUARD_TRACKER_ID, guardTrackerId);
-//            startActivity(intent);
-//
-//        }
-//    });
-
-//    @Override
-//    protected void onListItemClick(ListView l, View v, int position, long id) {
-//        final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
-//        if (device == null) return;
-//        final Intent intent = new Intent(this, GTDeviceControlActivity.class);
-//        intent.putExtra(GTDeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-//        intent.putExtra(GTDeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-//        if (mScanning) {
-//            //mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
-//            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//            mScanning = false;
-//        }
-//        startActivity(intent);
-//    }
 
     private void scanLeDevice(final boolean enable) {
         //final BluetoothLeScanner leScanner = mBluetoothAdapter.getBluetoothLeScanner();
@@ -234,27 +203,6 @@ public class DeviceScanActivity extends AppCompatActivity/*ListActivity*/ {
         }
         invalidateOptionsMenu();
     }
-
-//    private void scanLeDevice(final boolean enable) {
-//        if (enable) {
-//            // Stops scanning after a pre-defined scan period.
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mScanning = false;
-//                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//                    invalidateOptionsMenu();
-//                }
-//            }, SCAN_PERIOD);
-//
-//            mScanning = true;
-//            mBluetoothAdapter.startLeScan(mLeScanCallback);
-//        } else {
-//            mScanning = false;
-//            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-//        }
-//        invalidateOptionsMenu();
-//    }
 
     // Adapter for holding devices found through scanning.
     private class LeDeviceListAdapter extends BaseAdapter {
@@ -338,7 +286,6 @@ public class DeviceScanActivity extends AppCompatActivity/*ListActivity*/ {
         }
     }
 
-
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
@@ -357,25 +304,6 @@ public class DeviceScanActivity extends AppCompatActivity/*ListActivity*/ {
                 }
             };
 
-
-//    // Device scan callback.
-//    private ScanCallback mLeScanCallback =
-//            new ScanCallback() {
-//
-//                @Override
-//                public void onScanResult(int callbackType, final ScanResult result) {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            View emtpy = GTDeviceScanActivity.this.findViewById(android.R.id.empty);
-//                            emtpy.setVisibility(View.GONE);
-//                            BluetoothDevice device = result.getDevice();
-//                            mLeDeviceListAdapter.addDevice(device);
-//                            mLeDeviceListAdapter.notifyDataSetChanged();
-//                        }
-//                    });
-//                }
-//            };
 
     static class ViewHolder {
         TextView deviceName;

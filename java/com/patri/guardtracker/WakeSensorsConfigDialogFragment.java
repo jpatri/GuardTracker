@@ -34,8 +34,6 @@ public class WakeSensorsConfigDialogFragment extends AppCompatDialogFragment {
     private Switch mBleSwitch;
 
     private int mBitmask;
-    private int mMessageBodyId;
-    private int mDialogTitleId;
 
     // Use this instance of the interface to deliver action events
     DialogListener mListener;
@@ -63,40 +61,21 @@ public class WakeSensorsConfigDialogFragment extends AppCompatDialogFragment {
 
         Bundle bundle = getArguments();
         mBitmask = bundle.getInt(WAKE_SENSORS_BITMASK_ID_KEY);
-        mMessageBodyId = bundle.getInt(WAKE_SENSORS_MESSAGE_BODY_ID_KEY);
-        mDialogTitleId = bundle.getInt(WAKE_SENSORS_TITLE_ID_KEY);
+        int mMessageBodyId = R.string.dialog_wake_sensors_config_message_body;
+        int mDialogTitleId = R.string.dialog_wake_sensors_config_title;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_dialog_wake_sensors, null);
-        mAccSwitch = (Switch)mViewContainer.findViewById(R.id.dialog_accelerometer_switch);
-        mRtcSwitch = (Switch)mViewContainer.findViewById(R.id.dialog_rtc_switch);
-        mBleSwitch = (Switch)mViewContainer.findViewById(R.id.dialog_ble_switch);
+        mViewContainer = (ViewGroup)inflater.inflate(R.layout.fragment_wake_sensors_dialog, null);
+        mAccSwitch = mViewContainer.findViewById(R.id.dialog_accelerometer_switch);
+        mRtcSwitch = mViewContainer.findViewById(R.id.dialog_rtc_switch);
+        mBleSwitch = mViewContainer.findViewById(R.id.dialog_ble_switch);
 
         mAccSwitch.setChecked((mBitmask & BITMASK_ACC) != 0);
         mRtcSwitch.setChecked((mBitmask & BITMASK_RTC) != 0);
         mBleSwitch.setChecked((mBitmask & BITMASK_BLE) != 0);
-
-        ((LinearLayout)mAccSwitch.getParent()).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAccSwitch.toggle();
-            }
-        });
-        ((LinearLayout)mRtcSwitch.getParent()).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mRtcSwitch.toggle();
-            }
-        });
-        ((LinearLayout)mBleSwitch.getParent()).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mBleSwitch.toggle();
-            }
-        });
-
+        
         builder.setCancelable(true)
                 .setView(mViewContainer)
                 .setTitle(mDialogTitleId)

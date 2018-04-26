@@ -33,9 +33,27 @@
     <string name="saved_tracking_cfg_criteria_spinner_position">SavedTrackingCfgCriteriaSpinnerPosition</string>
 
     <!-- Maintain the same order in the next arrays for other languages -->
+    <string name="disable">Disable</string>
+    <string name="enable">Enable</string>
+    <string name="edit">Edit</string>
+    <string name="view_synced">View synced</string>
+    <string name="restore_synced">Restore</string>
+    <string name="sync">App->Dev</string>
+    <string name="refresh">App&lt;-Dev</string>
+    <string-array name="config_spinner_array">
+        <item>@string/config_label</item>
+        <item>@string/edit</item>
+        <item>@string/restore_synced</item>
+        <item>@string/view_synced</item>
+    </string-array>
+    <string-array name="sync_spinner_array">
+        <item>@string/sync_label</item>
+        <item>@string/sync</item>
+        <item>@string/refresh</item>
+    </string-array>
     <string-array name="enable_disable_array">
-        <item>Enable</item>
-        <item>Disable</item>
+        <item>@string/enable</item>
+        <item>@string/disable</item>
     </string-array>
     <string-array name="configurations_array">
         <item>Monitoring</item>
@@ -131,7 +149,7 @@
     <string name="internal_status_title">Internal status</string>
     <string name="last_mon_info_subtitle">Last monitoring information</string>
     <string name="pos_ref_subtitle">Reference position</string>
-    <string name="sensors_subtitle">Sensors</string>
+    <string name="sensors_subtitle">Wakeup sensors</string>
     <string name="owner_subtitle">Owner contact</string>
     <string name="secondary_contacts_subtitle">Secondary contacts</string>
     <string name="empty_contacts">No contacts</string>
@@ -169,12 +187,17 @@
     <string name="ble_status_label_for">Ble status:</string>
     <string name="sensors_program_label_for">Configuration:</string>
     <string name="program_label">Config</string>
+    <string name="ble_status_subtitle">BLE status</string>
     <string name="ble_status_disconnected">Disconnected</string>
     <string name="ble_status_connected">Connected</string>
     <string name="ble_status_scanning">Scanning</string>
     <string name="ble_status_in_range">In range</string>
     <string name="ble_status_connecting">Connecting</string>
+    <string name="ble_status_view_messages_button_label">View raw commands</string>
+    <string name="ble_status_hide_messages_button_label">Hide raw commands</string>
     <string name="ble_service_description">Service to manage a BLE connection. This service must be activated for the App may establish a connection with device.</string>
+
+
     <string name="id_gsm_addr_empty_label">&lt;empty gsm phone number></string>
     <string name="nickname_empty_label">&lt;empty device nickname></string>
 
@@ -243,6 +266,14 @@
     <string name="celsius_degrees_label">ºC</string>
     <string name="temp_low_label">Temp. low</string>
     <string name="temp_high_label">Temp. high</string>
+    <string name="edit_label">Edit</string>
+    <string name="config_label">Config</string>
+    <string name="sync_label">Sync</string>
+    <string name="restore_label">Restore</string>
+    <string name="view_last_label">Last</string>
+    <string name="not_synced">Not synced</string>
+    <string name="nothing_to_do">Nothing to do</string>
+    <string name="close_label">Close</string>
 
 
     <!-- Monitoring configuration -->
@@ -291,158 +322,221 @@
     <string name="settings">Settings</string>
 
     <!-- Dialog messages -->
+    <string name="dialog_db_message_successful">Successful database update</string>
+    <string name="dialog_db_message_unsuccessful">Unsuccessful database update</string>
+    <string name="dialog_dev_message_successful">Successful device update</string>
+    <string name="dialog_dev_message_unsuccessful">Unsuccessful device update</string>
+    <string name="dialog_db_dev_message_successful">Successful database and device update</string>
+    <string name="dialog_db_dev_message_unsuccessful">Unsuccessful database and device update</string>
     <string name="dialog_device_phone_number_title">Enter device phone number</string>
     <string name="dialog_device_phone_number_message_body">The device phone number can not be obtained automatically. The phone number must be introduced manually. This phone number is used to identify the source of SMS message.</string>
     <!-- Nickname dialog -->
     <string name="dialog_nickname_title">Enter nickname</string>
     <string name="dialog_nickname_message_body">Enter device nickname.</string>
-    <string name="dialog_nickname_success">Successful database update with new device nickname</string>
-    <string name="dialog_nickname_unsuccess">Unsuccessful database update with new device nickname</string>
+    <string name="dialog_nickname_successful">Successful database update with new device nickname</string>
+    <string name="dialog_nickname_unsuccessful">Unsuccessful database update with new device nickname</string>
     <string name="dialog_invalid_text_format">Invalid text format</string>
     <!-- Id GSM address dialog -->
     <string name="dialog_id_gsm_addr_message_body">Change device phone number every time you change the registered SIM card. You still must enter a dummy phone number, if you want to transfer the SIM card to another device, leave this device with no SIM card and, finally, both devices are controlled from this App.</string>
-    <string name="dialog_id_gsm_addr_success">Successful database update with new GuardTraker phone number</string>
+    <string name="dialog_id_gsm_addr_successful">Successful database update with new GuardTraker phone number</string>
     <!-- Generic phone number input dialog -->
     <string name="dialog_phone_title">Enter phone number</string>
     <string name="dialog_input_phone_hint">XX XXX XX XX</string>
     <string name="dialog_toast_ok">Operation conclude with success.</string>
     <string name="dialog_invalid_phone_format">Invalid phone number format</string>
     <!-- Wake sensors dialog -->
-    <string name="dialog_wake_sensors_title">Config wakeup sensors</string>
+    <string name="dialog_wake_sensors_restore_title">Restore wakeup sensors</string>
+    <string name="dialog_wake_sensors_restore_message_body">The wakeup sensors values will be restored with last synced values with device. Restore wakeup sensors values?</string>
+    <string name="dialog_wake_sensors_sync_title">Sync wakeup sensors</string>
+    <string name="dialog_wake_sensors_sync_message_body">The wakeup sensors values in device will be update with new values from App. Sync wakeup sensors values to device?</string>
+    <string name="dialog_wake_sensors_refresh_title">Refresh wakeup sensors</string>
+    <string name="dialog_wake_sensors_refresh_message_body">The wakeup sensors values in App will be updated with new values from device. Refresh wakeup sensors values from device?</string>
+    <string name="dialog_wake_sensors_config_title">Config wakeup sensors</string>
+    <string name="dialog_wake_sensors_config_message_body">Config individual wakeup sensors. On, the sensor may wakeup device; Off, the sensor never wakeup device.</string>
+    <string name="dialog_wake_sensors_view_synced_title">Wakeup sensors synced values</string>
+    <string name="dialog_wake_sensors_view_synced_message_body">No body</string>
     <string name="dialog_wake_sensors_accelerometer">Accelerometer</string>
     <string name="dialog_wake_sensors_rtc">Real time clock</string>
     <string name="dialog_wake_sensors_ble">Bluetooth</string>
-    <string name="dialog_wake_sensors_message_body">Config individual wakeup sensors. On, the sensor may wakeup device; Off, the sensor never wakeup device.</string>
-    <string name="refresh_wake_sensors_message_success">Successful database update with new sensors config value</string>
-    <string name="dialog_wake_sensors_message_success">Successful device update with new sensors config value</string>
+    <string name="dialog_wake_sensors_message_successful">Successful device update with new sensors config value</string>
     <string name="dialog_wake_sensors_message_unsuccessful_write">Unsuccessful device and database update with new sensors config value</string>
     <string name="dialog_wake_sensors_message_unsuccessful_read">Unsuccessful database update with new sensors config value (inconsistent with device after a write)</string>
+    <!-- Monitoring configuration dialog -->
+    <string name="dialog_mon_cfg_restore_title">Restore monitoring config</string>
+    <string name="dialog_mon_cfg_restore_message_body">The monitoring config values will be restored with last synced values with device. Restore monitoring config values?</string>
+    <string name="dialog_mon_cfg_sync_title">Sync monitoring config</string>
+    <string name="dialog_mon_cfg_sync_message_body">The monitoring config values in device will be update with new values from App. Sync monitoring config values to device?</string>
+    <string name="dialog_mon_cfg_refresh_title">Refresh monitoring config</string>
+    <string name="dialog_mon_cfg_refresh_message_body">The monitoring config values in App will be updated with new values from device. Refresh monitoring config values from device?</string>
+    <string name="dialog_mon_cfg_view_synced_title">Monitoring config synced values</string>
+    <string name="dialog_mon_cfg_view_synced_message_body">No body</string>
+
+    <string name="dialog_mon_cfg_cancel_title">Cancel monitoring config</string>
+    <string name="dialog_mon_cfg_cancel_message_body">Any monitoring config changes will be loosed if you continue the operation.\nDo you want to continue?</string>
+
+    <!-- Tracking configuration dialog -->
+    <string name="dialog_track_cfg_restore_title">Restore tracking config</string>
+    <string name="dialog_track_cfg_restore_message_body">The tracking config values will be restored with last synced values with device. Restore tracking config values?</string>
+    <string name="dialog_track_cfg_sync_title">Sync tracking config</string>
+    <string name="dialog_track_cfg_sync_message_body">The tracking config values in device will be update with new values from App. Sync tracking config values to device?</string>
+    <string name="dialog_track_cfg_refresh_title">Refresh tracking config</string>
+    <string name="dialog_track_cfg_refresh_message_body">The tracking config values in App will be updated with new values from device. Refresh tracking config values from device?</string>
+    <string name="dialog_track_cfg_view_synced_title">Tracking config synced values</string>
+    <string name="dialog_track_cfg_view_synced_message_body">No body</string>
+
+    <string name="dialog_track_cfg_cancel_title">Cancel tracking config</string>
+    <string name="dialog_track_cfg_cancel_message_body">Any tracking config changes will be loosed if you continue the operation.\nDo you want to continue?</string>
+    <!-- Vigilance configuration dialog -->
+    <string name="dialog_vig_cfg_restore_title">Restore vigilance config</string>
+    <string name="dialog_vig_cfg_restore_message_body">The vigilance config values will be restored with last synced values with device. Restore vigilance config values?</string>
+    <string name="dialog_vig_cfg_sync_title">Sync monitoring config</string>
+    <string name="dialog_vig_cfg_sync_message_body">The vigilance config values in device will be update with new values from App. Sync vigilance config values to device?</string>
+    <string name="dialog_vig_cfg_refresh_title">Refresh vigilance config</string>
+    <string name="dialog_vig_cfg_refresh_message_body">The vigilance config values in App will be updated with new values from device. Refresh vigilance config values from device?</string>
+    <string name="dialog_vig_cfg_view_synced_title">Vigilance config synced values</string>
+    <string name="dialog_vig_cfg_view_synced_message_body">No body</string>
+
+    <string name="dialog_vig_cfg_cancel_title">Cancel vigilance config</string>
+    <string name="dialog_vig_cfg_cancel_message_body">Any vigilance config changes will be loosed if you continue the operation.\nDo you want to continue?</string>
     <!-- Eliminate GuardTrackers dialog -->
     <string name="dialog_eliminate_devices_title">Eliminate devices</string>
     <string name="dialog_eliminate_devices_message_body">The selected devices will be eliminated from database. Do you want to continue?</string>
-    <string name="dialog_eliminate_devices_message_success">Successful database update with eliminated devices</string>
+    <string name="dialog_eliminate_devices_message_successful">Successful database update with eliminated devices</string>
     <string name="dialog_eliminate_devices_message_unsuccessful">Unsuccessful database update with eliminated devices</string>
     <!-- Eliminate GuardTracker dialog -->
     <string name="dialog_eliminate_device_title">Eliminate this device</string>
     <string name="dialog_eliminate_device_message_body">This device will be eliminated from database. Do you want to continue?</string>
-    <string name="dialog_eliminate_device_message_success">Successful database update with eliminated device</string>
+    <string name="dialog_eliminate_device_message_successful">Successful database update with eliminated device</string>
     <string name="dialog_eliminate_device_message_unsuccessful">Unsuccessful database update with eliminated device</string>
     <!-- Refresh secondary contacts -->
-    <string name="refresh_secondary_contacts_success">Successful database update with secondary contacts</string>
+    <string name="refresh_secondary_contacts_successful">Successful database update with secondary contacts</string>
     <string name="refresh_secondary_contacts_unsuccessful">Unsuccessful database update with secondary contacts</string>
     <!-- Add secondary contact dialog -->
     <string name="dialog_add_secondary_contact_title">Add contact</string>
     <string name="dialog_add_secondary_contact_message_body">Enter phone number to be notified by device</string>
-    <string name="dialog_add_secondary_contact_success">Successful device and database update with new contact</string>
+    <string name="dialog_add_secondary_contact_successful">Successful device and database update with new contact</string>
     <string name="dialog_add_secondary_contact_unsuccessful_write">Unsuccessful device and database update with new contact</string>
     <string name="dialog_add_secondary_contact_unsuccessful_read">Unsuccessful database update with new contact (inconsistent with device after a write)</string>
     <!-- Delete secondary contact dialog -->
     <string name="dialog_delete_secondary_contact_title">Delete contact</string>
     <string name="dialog_delete_secondary_contact_message_body">Enter phone number to be deleted from device</string>
-    <string name="dialog_delete_secondary_contact_success">Successful device and database update with deleted contact</string>
+    <string name="dialog_delete_secondary_contact_successful">Successful device and database update with deleted contact</string>
     <string name="dialog_delete_secondary_contact_unsuccessful_write">Unsuccessful device and database update with deleted contact</string>
     <string name="dialog_delete_secondary_contact_unsuccessful_read">Unsuccessful database update with deleted contact (inconsistent with device after a write)</string>
     <!-- Refresh owner -->
-    <string name="refresh_owner_success">Successful database update with owner phone number</string>
+    <string name="refresh_owner_successful">Successful database update with owner phone number</string>
     <string name="refresh_owner_unsuccessful">Unsuccessful database update with owner phone number</string>
     <!-- Change Owner dialog -->
     <string name="change_owner_button_label">Change owner</string>
     <string name="dialog_change_owner_phone_message_body">Enter mobile phone number to be paired with device.\nThis number will be used by device to send SMS alert messages.</string>
     <string name="dialog_change_owner_title">Enter mobile phone number</string>
-    <string name="dialog_change_owner_success">Successful device update with owner phone number</string>
+    <string name="dialog_change_owner_successful">Successful device update with owner phone number</string>
     <string name="dialog_change_owner_unsuccessful_write">Unsuccessful device and database update with owner phone number</string>
     <string name="dialog_change_owner_unsuccessful_read">Unsuccessful database update with owner phone number (inconsistent with device after a write)</string>
     <!-- Reset to factory defaults -->
     <string name="dialog_factory_defaults_title">Reset device to factory defaults</string>
     <string name="dialog_factory_defaults_message_body">The device will be reseated to factory defaults and will be unpaired with this App. The data related with device will be eliminated from database. Do you want to continue?</string>
-    <string name="dialog_factory_defaults_success">Successful device reset to factory defaults and database update</string>
+    <string name="dialog_factory_defaults_successful">Successful device reset to factory defaults and database update</string>
     <string name="dialog_factory_defaults_unsuccessful_write">Unsuccessful device reset to factory defaults and database update</string>
     <string name="dialog_factory_defaults_unsuccessful_read">Unsuccessful database update (inconsistent with device after a write)</string>
     <!-- Resync App with device -->
     <string name="dialog_resync_app_title">Resynchronize App with device</string>
     <string name="dialog_resync_app_message_body">The local database will be updated with device configurations. Do you want to continue?</string>
-    <string name="dialog_resync_app_success">Successful update database with device configuration data</string>
+    <string name="dialog_resync_app_successful">Successful update database with device configuration data</string>
     <string name="dialog_resync_app_unsuccessful">Unsuccessful update database with device configuration data</string>
     <!-- Resync Monitoring configuration App with device -->
     <string name="dialog_resync_monitoring_cfg_title">Resynchronize monitoring configuration</string>
     <string name="dialog_resync_monitoring_cfg_body">The local database will be updated with device monitoring configurations. Do you want to continue?</string>
-    <string name="dialog_resync_monitoring_cfg_success_database">Successful database update with monitoring configuration</string>
-    <string name="dialog_resync_monitoring_cfg_success_device">Successful device update with monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_db_successful">Successful database update with monitoring configuration</string>
+    <string name="dialog_resync_monitoring_cfg_dev_successful">Successful device update with monitoring configuration</string>
     <string name="dialog_resync_monitoring_cfg_unsuccessful_write">Unsuccessful device and database update with monitoring configuration</string>
     <string name="dialog_resync_monitoring_cfg_unsuccessful_read">Unsuccessful database update with monitoring configuration (inconsistent with device after a write)</string>
     <!-- Resync Tracking configuration App with device -->
     <string name="dialog_resync_tracking_cfg_title">Resynchronize tracking configuration</string>
     <string name="dialog_resync_tracking_cfg_body">The local database will be updated with device tracking configurations. Do you want to continue?</string>
-    <string name="dialog_resync_tracking_cfg_success">Successful device and database update with tracking configuration</string>
+    <string name="dialog_resync_tracking_cfg_successful">Successful device and database update with tracking configuration</string>
     <string name="dialog_resync_tracking_cfg_unsuccessful_write">Unsuccessful device and database update with tracking configuration</string>
     <string name="dialog_resync_tracking_cfg_unsuccessful_read">Unsuccessful database update with tracking configuration (inconsistent with device after a write)</string>
     <!-- Resync Vigilance configuration App with device -->
     <string name="dialog_resync_vigilance_cfg_title">Resynchronize vigilance configuration</string>
     <string name="dialog_resync_vigilance_cfg_body">The local database will be updated with device vigilance configurations. Do you want to continue?</string>
-    <string name="dialog_resync_vigilance_cfg_success">Successful device and database update with vigilance configuration</string>
+    <string name="dialog_resync_vigilance_cfg_successful">Successful device and database update with vigilance configuration</string>
     <string name="dialog_resync_vigilance_cfg_unsuccessful_write">Unsuccessful device and database update with vigilance configuration</string>
     <string name="dialog_resync_vigilance_cfg_unsuccessful_read">Unsuccessful database update with vigilance configuration (inconsistent with device after a write)</string>
     <!-- Monitoring cfg time of day -->
     <string name="dialog_mon_cfg_time_of_day_title">Define new wakeup hour of day</string>
     <string name="dialog_mon_cfg_time_of_day_message_body">Define hour of day to monitorize device. This value is used only if \"Period to monitorize\" field is defined in days domain.</string>
-    <string name="dialog_mon_cfg_time_of_day_success">Successful device and database update with new time to wakeup</string>
+    <string name="dialog_mon_cfg_time_of_day_successful">Successful device and database update with new time to wakeup</string>
     <string name="dialog_mon_cfg_time_of_day_unsuccessful_write">Unsuccessful device and database update with new time to wakeup</string>
     <string name="dialog_mon_cfg_time_of_day_unsuccessful_read">Unsuccessful database update with new time to wakeup (inconsistent with device after a write)</string>
     <!-- Monitoring cfg wakeup period -->
     <string name="dialog_mon_cfg_wakeup_period_title">Define new period</string>
     <string name="dialog_mon_cfg_wakeup_period_message_body">Define period to monitorize device. With \"minutes\" or \"hours\" options selected, time start counting after device turn off (bluetooth disconnect). With \"days\" option selected, device is wakedup in the time defined by the field \"Hour of day to monitorize\".</string>
-    <string name="dialog_mon_cfg_wakeup_period_success_write">Successful device update with new wakeup period</string>
+    <string name="dialog_mon_cfg_wakeup_period_successful_write">Successful device update with new wakeup period</string>
     <string name="dialog_mon_cfg_wakeup_period_unsuccessful_write">Unsuccessful device and database update with new wakeup period</string>
     <string name="dialog_mon_cfg_wakeup_period_unsuccessful_read">Unsuccessful database update with new wakeup period (inconsistent with device after a write)</string>
-    <!-- Monitoring cfg sms criteria -->
-    <string name="dialog_mon_cfg_sms_criteria_title">Define new SMS criteria</string>
+    <!-- Cfg sms criteria -->
+    <string name="dialog_cfg_sms_criteria_title">Define new SMS criteria</string>
     <string name="dialog_mon_cfg_sms_criteria_message_body">Define criteria to send SMS message after monitoring process. With \"Alarm Only\" option, an SMS message is sent only when a sensor value is outside it\'s bounds. The \"Cyclic\" option is referenced to \"Period to monitorize\" field.</string>
-    <string name="dialog_mon_cfg_sms_criteria_success_write">Successful device update with new SMS criteria</string>
-    <string name="dialog_mon_cfg_sms_criteria_success_read">Successful database update with new SMS criteria</string>
-    <string name="dialog_mon_cfg_sms_criteria_unsuccessful_write">Unsuccessful device and database update with new SMS criteria</string>
-    <string name="dialog_mon_cfg_sms_criteria_unsuccessful_read">Unsuccessful database update with new SMS criteria (inconsistent with device after a write)</string>
-    <!-- Monitoring cfg gps threshold -->
-    <string name="dialog_mon_cfg_gps_threshold_title">Define new GPS threshold</string>
-    <string name="dialog_mon_cfg_gps_threshold_message_body">Define distance from reference position from which the device is considered to be in a different position. The defined distance will be an approximated value.</string>
-    <string name="dialog_mon_cfg_gps_threshold_success_write">Successful device update with new Gps threshold</string>
-    <string name="dialog_mon_cfg_gps_threshold_success_read">Successful database update with new Gps threshold</string>
-    <string name="dialog_mon_cfg_gps_threshold_unsuccessful_write">Unsuccessful device and database update with new Gps threshold</string>
-    <string name="dialog_mon_cfg_gps_threshold_unsuccessful_read">Unsuccessful database update with new Gps threshold (inconsistent with device after a write)</string>
-    <!-- Monitoring cfg gps fov -->
-    <string name="dialog_mon_cfg_gps_fov_title">Define new GPS field of view</string>
-    <string name="dialog_mon_cfg_gps_fov_message_body">Define minimum number of satellites in view to validate a GPS position. A greater value gets an accurate position but takes longer to be valid.</string>
-    <string name="dialog_mon_cfg_gps_fov_success_write">Successful device update with new Gps field of view</string>
-    <string name="dialog_mon_cfg_gps_fov_success_read">Successful database update with new Gps field of view</string>
-    <string name="dialog_mon_cfg_gps_fov_unsuccessful_write">Unsuccessful device and database update with new Gps field of view</string>
-    <string name="dialog_mon_cfg_gps_fov_unsuccessful_read">Unsuccessful database update with new Gps field of view (inconsistent with device after a write)</string>
-    <!-- Monitoring cfg gps timeout -->
-    <string name="dialog_mon_cfg_gps_timeout_title">Define new GPS timeout</string>
-    <string name="dialog_mon_cfg_gps_timeout_message_body">Define maximum time to wait for valid GPS position. This value is expressed in minutes units.</string>
-    <string name="dialog_mon_cfg_gps_timeout_success_write">Successful device update with new Gps timeout</string>
-    <string name="dialog_mon_cfg_gps_timeout_success_read">Successful database update with new Gps timeout</string>
-    <string name="dialog_mon_cfg_gps_timeout_unsuccessful_write">Unsuccessful device and database update with new Gps timeout</string>
-    <string name="dialog_mon_cfg_gps_timeout_unsuccessful_read">Unsuccessful database update with new Gps timeout (inconsistent with device after a write)</string>
+    <string name="dialog_track_cfg_sms_criteria_message_body">Define criteria to send SMS message when in tracking process. With \"Lasy\" option, an SMS message is sent XXX. The \"XXX\" option. Todo: more explanation options.</string>
+    <string name="dialog_cfg_sms_criteria_successful_write">Successful device update with new SMS criteria</string>
+    <string name="dialog_cfg_sms_criteria_successful_read">Successful database update with new SMS criteria</string>
+    <string name="dialog_cfg_sms_criteria_unsuccessful_write">Unsuccessful device and database update with new SMS criteria</string>
+    <string name="dialog_cfg_sms_criteria_unsuccessful_read">Unsuccessful database update with new SMS criteria (inconsistent with device after a write)</string>
+    <!-- Cfg gps threshold -->
+    <string name="dialog_cfg_gps_threshold_title">Define new GPS threshold</string>
+    <string name="dialog_cfg_gps_threshold_message_body">Define distance from reference position from which the device is considered to be in a different position. The defined distance will be an approximated value.</string>
+    <string name="dialog_cfg_gps_threshold_successful_write">Successful device update with new Gps threshold</string>
+    <string name="dialog_cfg_gps_threshold_successful_read">Successful database update with new Gps threshold</string>
+    <string name="dialog_cfg_gps_threshold_unsuccessful_write">Unsuccessful device and database update with new Gps threshold</string>
+    <string name="dialog_cfg_gps_threshold_unsuccessful_read">Unsuccessful database update with new Gps threshold (inconsistent with device after a write)</string>
+    <!-- Cfg gps fov -->
+    <string name="dialog_cfg_gps_fov_title">Define new GPS field of view</string>
+    <string name="dialog_cfg_gps_fov_message_body">Define minimum number of satellites in view to validate a GPS position. A greater value gets an accurate position but takes longer to be valid.</string>
+    <string name="dialog_cfg_gps_fov_successful_write">Successful device update with new Gps field of view</string>
+    <string name="dialog_cfg_gps_fov_successful_read">Successful database update with new Gps field of view</string>
+    <string name="dialog_cfg_gps_fov_unsuccessful_write">Unsuccessful device and database update with new Gps field of view</string>
+    <string name="dialog_cfg_gps_fov_unsuccessful_read">Unsuccessful database update with new Gps field of view (inconsistent with device after a write)</string>
+    <!-- Cfg gps timeout -->
+    <string name="dialog_cfg_gps_timeout_title">Define new GPS timeout</string>
+    <string name="dialog_cfg_gps_timeout_message_body">Define maximum time to wait for valid GPS position. This value is expressed in minutes units.</string>
+    <string name="dialog_cfg_gps_timeout_successful_write">Successful device update with new Gps timeout</string>
+    <string name="dialog_cfg_gps_timeout_successful_read">Successful database update with new Gps timeout</string>
+    <string name="dialog_cfg_gps_timeout_unsuccessful_write">Unsuccessful device and database update with new Gps timeout</string>
+    <string name="dialog_cfg_gps_timeout_unsuccessful_read">Unsuccessful database update with new Gps timeout (inconsistent with device after a write)</string>
+    <!-- Tracking cfg timeouts (tracking, pre and post) -->
+    <string name="dialog_cfg_timeout_tracking_title">Define new timeout for Tracking state</string>
+    <string name="dialog_cfg_timeout_tracking_message_body">Define maximum time in Tracking state without position modification. This value is expressed in minutes units.</string>
+    <string name="dialog_cfg_timeout_pre_title">Define new timeout for PreTracking state</string>
+    <string name="dialog_cfg_timeout_pre_message_body">Define maximum time in PreTracking state without position modification. This value is expressed in minutes units.</string>
+    <string name="dialog_cfg_timeout_post_title">Define new timeout for PostTracking state</string>
+    <string name="dialog_cfg_timeout_post_message_body">Define maximum time in PostTracking state without position modification. This value is expressed in minutes units.</string>
     <!-- Monitoring cfg temperature bounds -->
     <string name="dialog_mon_cfg_temp_bounds_title">Define new temperature boundaries</string>
     <string name="dialog_mon_cfg_temp_bounds_message_body">Define low and high limits of valid temperature values.</string>
-    <string name="dialog_mon_cfg_temp_bounds_success_write">Successful device update with new temperature boundaries</string>
-    <string name="dialog_mon_cfg_temp_bounds_success_read">Successful database update with new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_successful_write">Successful device update with new temperature boundaries</string>
+    <string name="dialog_mon_cfg_temp_bounds_successful_read">Successful database update with new temperature boundaries</string>
     <string name="dialog_mon_cfg_temp_bounds_unsuccessful_write">Unsuccessful device and database update with new temperature boundaries</string>
     <string name="dialog_mon_cfg_temp_bounds_unsuccessful_read">Unsuccessful database update with new temperature boundaries (inconsistent with device after a write)</string>
     <!-- Monitoring cfg sim balance waterline -->
     <string name="dialog_mon_cfg_sim_balance_title">Define new SIM balance</string>
     <string name="dialog_mon_cfg_sim_balance_message_body">Define lower limit of SIM balance value to generate an alert.</string>
-    <string name="dialog_mon_cfg_sim_balance_success_write">Successful device update with new SIM balance</string>
-    <string name="dialog_mon_cfg_sim_balance_success_read">Successful database update with new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_successful_write">Successful device update with new SIM balance</string>
+    <string name="dialog_mon_cfg_sim_balance_successful_read">Successful database update with new SIM balance</string>
     <string name="dialog_mon_cfg_sim_balance_unsuccessful_write">Unsuccessful device and database update with new SIM balance</string>
     <string name="dialog_mon_cfg_sim_balance_unsuccessful_read">Unsuccessful database update with new SIM balance (inconsistent with device after a write)</string>
+    <!-- Vigilance cfg items -->
+    <string name="dialog_vig_cfg_tilt_sensitivity_title">Define new tilt sensitivity</string>
+    <string name="dialog_vig_cfg_tilt_sensitivity_message_body">This config is not currently supported in GuardTracker device.\nDefine new level of sensitivity to accelerometer device. Higher percent value means more sensitivity, so the device will wakeup more easily with disturbances.</string>
+    <string name="dialog_vig_cfg_ble_advert_period_title">Define new BLE advertisement period</string>
+    <string name="dialog_vig_cfg_ble_advert_period_message_body">This config is not currently supported in GuardTracker device.\nDefine new period to BLE to send an advertisement packet. Expressed in second units. Lower level means the device is discovered by a scanner more quickly. </string>
     <!-- Pos ref fragment area -->
-    <string name="refresh_pos_ref_success">Successful database update with new reference position</string>
-    <string name="toast_pos_ref_success">Successful device update with new reference position</string>
+    <string name="refresh_pos_ref_successful">Successful database update with new reference position</string>
+    <string name="toast_pos_ref_successful">Successful device update with new reference position</string>
     <string name="toast_pos_ref_pending">This command will be pending until a new position is acquired</string>
     <string name="toast_pos_ref_unsuccessful_write">Unsuccessful device and database update with new reference position</string>
     <string name="toast_pos_ref_unsuccessful_read">Unsuccessful database update with new position position (inconsistent with device after a write)</string>
-    <string name="toast_pos_ref_cancel_success">Successful stop device update with new reference position</string>
+    <string name="toast_pos_ref_cancel_successful">Successful stop device update with new reference position</string>
     <string name="toast_pos_ref_cancel_unsuccessful">The device was not updating new reference position</string>
 
     <!-- Backoffice -->

@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:text="@string/last_mon_info_subtitle"
             android:textAppearance="?android:textAppearanceSmall"
-            android:id="@+id/textView"
+            android:id="@+id/sensors_subtitle_view"
             android:paddingBottom="@dimen/margin_medium"/>
         <View
             android:layout_width="0dp"

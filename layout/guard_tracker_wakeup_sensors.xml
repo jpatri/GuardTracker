@@ -1,54 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sensors_prog_root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/track_cfg_root_layout"
     android:elevation="2dp"
     android:padding="@dimen/margin_medium"
     tools:showIn="@layout/activity_guard_tracker">
 
     <TextView
-        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/track_cfg_subtitle"
+        android:text="@string/sensors_subtitle"
         android:textAppearance="?android:textAppearanceSmall"
-        android:id="@+id/track_cfg_subtitle_view"
+        android:id="@+id/sensors_subtitle_view"
         android:paddingBottom="@dimen/margin_medium"/>
 
-
     <TextView
-        android:id="@+id/track_cfg_synced_state_view"
-        android:layout_below="@id/track_cfg_subtitle_view"
-        android:layout_alignParentStart="true"
+        android:id="@+id/sensors_synced_state_view"
+        android:layout_toEndOf="@id/sensors_subtitle_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/not_synced"
         android:textAppearance="?android:textAppearanceSmall"
         android:textColor="#FF0000"
         android:textAllCaps="true"
-        android:ellipsize="end"
-        android:scrollHorizontally="true"
-        android:singleLine="true"
-        android:scrollbars="horizontal"
+        android:paddingLeft="@dimen/margin_large"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <include layout="@layout/fragment_wake_sensors_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sensors_subtitle_view"
         />
 
     <Spinner
-        android:id="@+id/track_cfg_sync_spinner"
+        android:id="@+id/sensors_config_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:textAlignment="textEnd"
         />
+
     <Spinner
-        android:id="@+id/track_cfg_config_spinner"
+        android:id="@+id/sensors_sync_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/sensors_config_spinner"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/track_cfg_sync_spinner"
         android:textAlignment="textEnd"
-        android:layout_marginTop="@dimen/margin_small"
         />
+
 </RelativeLayout>
+

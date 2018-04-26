@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:paddingLeft="@dimen/margin_medium"
+    android:paddingRight="@dimen/margin_medium"
+    >
+    <ImageView
+        android:layout_alignParentStart="true"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_bluetooth"
+        android:id="@+id/sensors_ble_img_view"/>
+
+    <TextView
+        android:id="@+id/sensors_ble_state_label"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/sensors_ble_img_view"
+        android:layout_alignStart="@id/sensors_ble_img_view"
+        android:layout_below="@id/sensors_ble_img_view"
+        android:text="@string/enable"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        />
+
+    <ImageView
+        android:layout_toEndOf="@id/sensors_ble_img_view"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_acc"
+        android:id="@+id/sensors_acc_img_view"/>
+    <TextView
+        android:layout_alignEnd="@id/sensors_acc_img_view"
+        android:layout_alignStart="@id/sensors_acc_img_view"
+        android:layout_below="@id/sensors_acc_img_view"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enable"
+        android:id="@+id/sensors_acc_state_label"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        />
+
+    <ImageView
+        android:layout_toEndOf="@id/sensors_acc_img_view"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_clock_on"
+        android:id="@+id/sensors_rtc_img_view"/>
+
+    <TextView
+        android:id="@+id/sensors_rtc_state_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/sensors_rtc_img_view"
+        android:layout_alignStart="@id/sensors_rtc_img_view"
+        android:layout_below="@id/sensors_rtc_img_view"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
+        android:text="@string/enable"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        />
+
+</RelativeLayout>

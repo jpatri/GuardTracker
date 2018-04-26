@@ -1,47 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:id="@+id/mon_cfg_root_layout"
     android:elevation="2dp"
     android:padding="@dimen/margin_medium"
     tools:showIn="@layout/activity_guard_tracker">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/mon_cfg_subtitle"
         android:textAppearance="?android:textAppearanceSmall"
-        android:id="@+id/textView"
+        android:id="@+id/mon_cfg_subtitle_view"
         android:paddingBottom="@dimen/margin_medium"/>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mon_cfg_next_wake_label"
-            android:textAppearance="?android:textAppearanceSmall"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="&lt;dd/mm/yyyy  hh:mm>"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:id="@+id/mon_cfg_next_wake_datetime"
-            android:layout_marginStart="31dp"
-            />
-    </LinearLayout>
-
-    <Button
+    <TextView
+        android:id="@+id/mon_cfg_next_wakeup_label"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/mon_cfg_subtitle_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:text="@string/details_button_label"
-        android:layout_gravity="right"
-        android:id="@+id/mon_cfg_details" />
-</LinearLayout>
+        android:text="@string/mon_cfg_next_wake_label"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:singleLine="true"
+        />
+    <TextView
+        android:id="@+id/mon_cfg_synced_state_view"
+        android:layout_toEndOf="@id/mon_cfg_next_wakeup_label"
+        android:layout_alignBottom="@id/mon_cfg_next_wakeup_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_synced"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="#FF0000"
+        android:textAllCaps="true"
+        android:paddingLeft="@dimen/margin_large"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:layout_toStartOf="@+id/mon_cfg_config_spinner"
+        android:scrollbars="horizontal"
+        />
+    <TextView
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/mon_cfg_next_wakeup_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;dd/mm/yyyy  hh:mm>"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:id="@+id/mon_cfg_next_wakeup_view"
+        android:paddingLeft="@dimen/margin_medium"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:layout_toStartOf="@id/mon_cfg_config_spinner"
+        />
+
+    <Spinner
+        android:id="@+id/mon_cfg_config_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:textAlignment="textEnd"
+        />
+
+    <Spinner
+        android:id="@+id/mon_cfg_sync_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/mon_cfg_config_spinner"
+        android:textAlignment="textEnd"
+        />
+</RelativeLayout>

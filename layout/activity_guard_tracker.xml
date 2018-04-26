@@ -54,7 +54,18 @@
                 android:text="@string/current_status_title"
                 android:paddingTop="@dimen/margin_small"
                 android:paddingLeft="@dimen/margin_medium"/>
-            <include layout="@layout/guard_tracker_last_mon_info" />
+
+            <include
+                layout="@layout/guard_tracker_ble_status"
+                android:layout_height="wrap_content" />
+            <View
+                android:background="@color/color_background"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_height="1dp"
+                />
+            <include layout="@layout/guard_tracker_wakeup_sensors" />
             <View
                 android:background="@color/color_background"
                 android:layout_width="match_parent"
@@ -70,7 +81,7 @@
                 android:layout_marginRight="@dimen/margin_medium"
                 android:layout_height="1dp"
                 />
-            <include layout="@layout/guard_tracker_sensors_prog" />
+            <include layout="@layout/guard_tracker_last_mon_info" />
             <!-- Configurations -->
             <TextView
                 android:layout_width="match_parent"

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="@string/track_sessions_subtitle"
         android:textAppearance="?android:textAppearanceSmall"
-        android:id="@+id/textView"
+        android:id="@+id/sensors_subtitle_view"
         android:paddingBottom="@dimen/margin_medium"/>
 
     <TextView

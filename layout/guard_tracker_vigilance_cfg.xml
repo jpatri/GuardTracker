@@ -1,27 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:id="@+id/vig_cfg_root_layout"
     android:elevation="2dp"
     android:padding="@dimen/margin_medium"
     tools:showIn="@layout/activity_guard_tracker">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/vigilance_cfg_subtitle"
         android:textAppearance="?android:textAppearanceSmall"
-        android:id="@+id/textView"
+        android:id="@+id/vig_cfg_subtitle_view"
         android:paddingBottom="@dimen/margin_medium"/>
 
-    <Button
+
+    <TextView
+        android:id="@+id/vig_cfg_synced_state_view"
+        android:layout_below="@id/vig_cfg_subtitle_view"
+        android:layout_alignParentStart="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:text="@string/details_button_label"
-        android:layout_gravity="right"
-        android:id="@+id/vigilance_cfg_details"
+        android:text="@string/not_synced"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="#FF0000"
+        android:textAllCaps="true"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:scrollbars="horizontal"
         />
-</LinearLayout>
+    <Spinner
+        android:id="@+id/vig_cfg_sync_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:textAlignment="textEnd"
+        />
+    <Spinner
+        android:id="@+id/vig_cfg_config_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/vig_cfg_sync_spinner"
+        android:textAlignment="textEnd"
+        android:layout_marginTop="@dimen/margin_small"
+        />
+
+</RelativeLayout>

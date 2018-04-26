@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ble_status_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="2dp"
+    android:padding="@dimen/margin_medium"
+    tools:showIn="@layout/activity_guard_tracker">
+
+    <TextView
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ble_status_subtitle"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:id="@+id/ble_status_subtitle_view"
+        android:paddingBottom="@dimen/margin_medium"/>
+
+    <TextView
+        android:layout_alignStart="@id/ble_status_subtitle_view"
+        android:layout_below="@id/ble_status_subtitle_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;BLE status>"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:id="@+id/ble_status_value"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ble_status_value"
+        android:layout_alignParentEnd="true"
+        android:text="@string/ble_status_view_messages_button_label"
+        android:id="@+id/ble_status_commands_button" />
+
+    <EditText
+        android:id="@+id/ble_status_commands_editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lines="5"
+        android:layout_below="@+id/ble_status_commands_button"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:editable="false"
+        android:scrollIndicators="top|bottom"
+        android:textAlignment="textStart"
+        android:cursorVisible="false"
+        android:elevation="4dp"
+        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarSize="10dp"
+        />
+<!--    android:fadeScrollbars="true"-->
+
+
+</RelativeLayout>

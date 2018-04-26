@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_medium"
+    >
+
+
+    <TextView
+        android:id="@+id/acc_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_wake_sensors_accelerometer"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/dialog_accelerometer_switch"
+        />
+
+
+    <Switch
+        android:id="@+id/dialog_accelerometer_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background"
+        android:layout_below="@id/dialog_accelerometer_switch"
+        android:id="@+id/rule1"
+        />
+
+    <TextView
+        android:id="@+id/rtc_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_wake_sensors_rtc"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/dialog_rtc_switch"
+        />
+
+    <Switch
+        android:id="@+id/dialog_rtc_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/rule1"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background"
+        android:layout_below="@id/dialog_rtc_switch"
+        android:id="@+id/rule2"
+        />
+
+    <TextView
+        android:id="@+id/ble_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_wake_sensors_ble"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/dialog_ble_switch"
+        />
+
+    <Switch
+        android:id="@+id/dialog_ble_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/rule2"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:layout_marginBottom="@dimen/margin_medium"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_background"
+        android:layout_below="@id/dialog_ble_switch"
+        />
+</RelativeLayout>
